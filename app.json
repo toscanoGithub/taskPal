@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "taskPal",
-    "slug": "taskPal",
+    "slug": "taskpal",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -36,6 +36,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "ea171f3b-ef2b-4ec5-a774-4bcc21518260"
+      }
+    },
+    "owner": "toscano"
   }
 }
