@@ -7,6 +7,9 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+import {EvaIconsPack} from '@ui-kitten/eva-icons';
+import * as eva from '@eva-design/eva';
+import { ApplicationProvider, IconRegistry, Layout, Text } from '@ui-kitten/components';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -28,12 +31,17 @@ export default function RootLayout() {
   }
 
   return (
+    <ApplicationProvider {...eva} theme={eva.light}>
+            <IconRegistry icons={EvaIconsPack}/>
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack screenOptions={{headerShown: false}}>
+        <Stack.Screen name="(screens)/index" />
+        <Stack.Screen name="(screens)/parent-screen" options={{headerShown: true}}/>
+        <Stack.Screen name="(screens)/child-screen" options={{headerShown: true}}/>
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
+    </ApplicationProvider>
   );
 }
