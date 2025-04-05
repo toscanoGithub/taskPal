@@ -3,6 +3,9 @@
 # dependencies
 node_modules/
 
+# Custom
+app.json
+
 # Expo
 .expo/
 dist/

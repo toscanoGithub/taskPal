@@ -134,7 +134,8 @@ const styles = StyleSheet.create({
   
 
   authBtn: {
-       borderRadius: 30, paddingHorizontal: 30, backgroundColor: theme["btn-bg-color"], 
+       borderRadius: 30, paddingHorizontal: 30, 
+       backgroundColor: theme["btn-bg-color"], 
        borderColor: "transparent",
        borderBottomColor: theme.secondary,
        minWidth: 150,
