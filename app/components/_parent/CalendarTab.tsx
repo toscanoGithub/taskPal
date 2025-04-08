@@ -1,4 +1,4 @@
-import { Animated, ImageProps, Modal, SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { Alert, Animated, ImageProps, Modal, SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Text, Button,  Icon, IconElement, Layout, Spinner } from '@ui-kitten/components'
 import theme from '../../theme.json'
@@ -8,6 +8,9 @@ import { useUserContext } from '@/contexts/UserContext'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Popover from 'react-native-popover-view';
 import { FamilyMember } from '@/types/Entity'
+import { Calendar, DateData } from 'react-native-calendars';
+import { Direction, MarkedDates } from 'react-native-calendars/src/types';
+import AddTaskForm from './AddTaskForm'
 
 const CalendarTab = () => {
     const [familyMembers, setFamilyMembers] = useState<any[]>([])
@@ -17,6 +20,11 @@ const CalendarTab = () => {
     const [isPopoverContentVisible, setIsPopoverContentVisible] = useState(false);
     const [selectedFamilyMember, setSelectedFamilyMember] = useState<string>();
 
+    const [selectedDate, setSelectedDate] = useState<DateData>();
+    const [daysWithTasks, setDaysWithTasks] = useState<MarkedDates>({});
+
+    const [modalType, setModalType] = useState<string>()
+
     const memberSelected = (member: FamilyMember) => {
       if (member.name === selectedFamilyMember) {
         setIsPopoverContentVisible(false);
@@ -25,6 +33,12 @@ const CalendarTab = () => {
       setIsPopoverContentVisible(false);
       setSelectedFamilyMember(member.name);
     };
+
+    useEffect(() => { 
+      if (user?.members && !selectedFamilyMember) {
+        setSelectedFamilyMember(user!.members[0].name)
+      }
+  }, []);
 
 
     const renderShakeAddFamilyMemberIcon = (props: any): IconElement => (
@@ -57,8 +71,30 @@ const CalendarTab = () => {
       user?.members?.forEach((element: any) => {
         setFamilyMembers((prev: any[]) => [...prev, element])
       });
+
+      
     }, [user?.members?.length])
     
+
+    // Handler for when a day is pressed
+      const handleDayPress = (date: DateData) => {
+        setModalType("ADD_TASK");
+        if (date.dateString < new Date().toLocaleDateString()) return;
+    
+        if (!user?.members?.length) {
+          Alert.alert("You need to add a child");
+          return;
+        }
+    
+        setSelectedDate(date);
+        setModalIsVisible(!modalIsVisible);
+      };
+
+
+      const addFamilyMemberPressed = () => {
+        setModalType("ADD_MEMBER");
+        setModalIsVisible(!modalIsVisible);
+      }
     
     return (
       <View style={styles.container}>
@@ -73,7 +109,7 @@ const CalendarTab = () => {
           
           {/* Row selected member | select member */}
           <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width:"100%", paddingHorizontal: 10, paddingVertical: 0}}>
-          <Text>{selectedFamilyMember}</Text>
+              <Text>{selectedFamilyMember || familyMembers[0].name}</Text>
           <View style={{ marginLeft: "auto" }}>
             <Popover
               isVisible={isPopoverContentVisible}
@@ -106,12 +142,27 @@ const CalendarTab = () => {
           </View>
   
           {/* Calendar */}
-          
+          <View style={styles.calendarContainer}>
+          <Calendar
+            theme={{ calendarBackground: "#ffffff" , dayTextColor:"black"}}
+            date={'2025-01-01'}
+            minDate={new Date().toLocaleDateString()}
+            maxDate={'2080-12-31'}
+            onDayPress={handleDayPress}
+            monthFormat={'yyyy MMM'}
+            renderArrow={(direction: Direction) => (
+              <View style={{ padding: 10 }}>
+                {direction === 'left' ? <Text>◀</Text> : <Text>▶</Text>}
+              </View>
+            )}
+            markedDates={daysWithTasks}
+          />
+        </View>
           </View>
         }
 
           <Button
-            onPress={() => {setModalIsVisible(!modalIsVisible)}}
+            onPress={addFamilyMemberPressed}
               style={styles.addMembersBtn}
               status='danger'
               accessoryLeft={renderShakeAddFamilyMemberIcon}
@@ -124,9 +175,11 @@ const CalendarTab = () => {
             <Button style={styles.closeBtn} onPress={() => dismissModal()}>
               <MaterialCommunityIcons name="close" size={32} color="red" />
             </Button>
-              {
-                 user && <AddFamilyMemberForm  dismiss={() => setModalIsVisible(!modalIsVisible)} />
-  }
+            {modalType === "ADD_MEMBER" ? (
+               user && <AddFamilyMemberForm dismiss={() => setModalIsVisible(!modalIsVisible)}  />
+            ) : 
+              <AddTaskForm toFamilyMember={selectedFamilyMember || familyMembers[0]?.name || ""} dismiss={() => setModalIsVisible(!modalIsVisible)} />
+            }
           </View>
         </View>
       </Modal>
@@ -202,5 +255,14 @@ const styles = StyleSheet.create({
       borderWidth: 1,
       borderColor: theme.tertiary,
       backgroundColor: "transparent",
+    },
+
+    calendarContainer: {
+      borderWidth: 1,
+      borderColor: '#ccc',
+      borderRadius: 5,
+      marginHorizontal: 10,
+      marginVertical: 10,
+      boxShadow: "rgba(50, 50, 93, 0.25) 0px 50px 100px -10px, #4A8177 0px 30px 60px -30px",
     },
 })
