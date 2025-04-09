@@ -1,3 +1,4 @@
+import { DateData } from "react-native-calendars";
 
 
 export interface User {
@@ -30,6 +31,24 @@ export interface Parent {
     name: string;
     email: string;
     members?: FamilyMember[]
+}
+
+
+interface TaskItem {
+    id: string;
+    description: string;
+    status: string;
+}
+
+
+// Define the Task type
+export interface Task {
+    // [x: string]: TaskItem[];
+    id?: string;
+    date: DateData;
+    parent: Parent;
+    toFamilyMember: string;
+    description: string
 }
 
 
