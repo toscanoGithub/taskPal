@@ -96,7 +96,7 @@ export default AddTaskForm
 
 const styles = StyleSheet.create({
   modalTitle: {
-    marginTop: 30,
+    marginTop: 40,
     marginBottom:0,
     textAlign: 'center',
     color: "#EDB232"

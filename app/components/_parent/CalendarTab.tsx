@@ -45,23 +45,25 @@ const CalendarTab = () => {
 
   // Handler for when a day is pressed
   const handleDayPress = (date: DateData) => {
+    if (!selectedFamilyMember) {
+      Alert.alert("You need to select a family member");
+      return;
+    }
+
     setModalType("ADD_TASK");
     if (date.dateString < new Date().toLocaleDateString()) return;
 
-    if (!user?.members?.length) {
-      Alert.alert("You need to add a child");
-      return;
-    }
+    
 
     setSelectedDate(date);
     setModalIsVisible(!modalIsVisible);
   };
 
-  useEffect(() => { 
-      if (user?.members && !selectedFamilyMember) {
-        setSelectedFamilyMember(user!.members[0].name)
-      }
-  }, [user]);
+  // useEffect(() => { 
+  //     if (user?.members && !selectedFamilyMember) {
+  //       setSelectedFamilyMember(user!.members[0].name)
+  //     }
+  // }, [user]);
 
   useEffect(() => {
     const tasksDates = tasks.map(task => {
@@ -115,16 +117,18 @@ const CalendarTab = () => {
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Text style={styles.greetings} category="h4">Welcome, </Text>
           <Text style={styles.greetings} category="h4">{user?.name}</Text>
-          
         </View>
-        <Text style={styles.instructions} category="s2">
-          Interact with the calendar below to add or manage tasks for your family members.
-        </Text>
+       {
+        selectedFamilyMember &&  <Text style={styles.instructions} category="s2">
+        Please, select a family member .
+      </Text>  
+       }
       </View>
 
       {user?.members && (
         <View style={{ flexDirection: "row", width: "100%", paddingHorizontal: 10, justifyContent: "space-between", alignItems: "center" }}>
           
+          <Text style={{fontSize: 16, color: theme['gradient-to']}} category='h6'>{selectedFamilyMember}</Text>
           <View style={{ marginLeft: "auto" }}>
             <Popover
               isVisible={isPopoverContentVisible}
