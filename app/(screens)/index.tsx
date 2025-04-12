@@ -54,7 +54,7 @@ const AuthScreen = () => {
           }, 450);
           setModalType("SIGN UP")
           setModalIsVisible(true);
-            }} style={[styles.authBtn, {borderBottomWidth: signinPressed ? 0 : 3}]} appearance='outline'  >
+            }} style={[styles.authBtn, {borderBottomWidth: signupPressed ? 0 : 3}]} appearance='outline'  >
               {evaProps => <Text  {...evaProps} style={{color:"#ffffff"}}>SIGN UP</Text>}</Button>
 
        
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
       justifyContent:"center", 
       alignItems:"center",
       columnGap: 20,
-      marginTop: 100
+      marginTop: 150
   },
 
  
