@@ -119,7 +119,7 @@ const CalendarTab = () => {
           <Text style={styles.greetings} category="h4">{user?.name}</Text>
         </View>
        {
-        selectedFamilyMember &&  <Text style={styles.instructions} category="s2">
+        !selectedFamilyMember &&  <Text style={styles.instructions} category="s2">
         Please, select a family member .
       </Text>  
        }
@@ -189,7 +189,7 @@ const CalendarTab = () => {
       <Modal animationType="slide" transparent={true} visible={modalIsVisible}>
         <View style={styles.centeredView}>
           <View style={[styles.modalView, { height: "85%" }]}>
-            <Gradient />
+            <Gradient from={theme['gradient-from']} to={theme['gradient-to']} />
             <Button style={styles.closeBtn} onPress={() => dismissModal()}>
               <MaterialCommunityIcons name="close" size={32} color="red" />
             </Button>

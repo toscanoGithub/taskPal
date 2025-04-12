@@ -14,14 +14,21 @@ interface Parent {
 }
 
 
+// Define the TaskItem type
+interface TaskItem {
+    id: string;
+    description: string;
+    status: string;
+}
+
 // Define the Task type
-interface Task {
+export interface Task {
     id?: string;
     description: string;
     date: DateData;
     parent: Parent;
     toFamilyMember: string;
-    tasks?: string[];
+    tasks?: TaskItem[];
 }
 
 // Define the TaskContext type
