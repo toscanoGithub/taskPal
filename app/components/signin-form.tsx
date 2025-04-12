@@ -40,6 +40,7 @@ const SigninForm: React.FC<signupProp> = ({ dismissModal }) => {
   const {setUser, user} = useUserContext()
   const auth = getAuth();
   const router = useRouter();
+  const [loginBtnPressed, setLoginBtnPressed] = useState(false)
 
   // REGISTER LOGIC
   const signin = async (values: FormValues) => {
@@ -163,11 +164,14 @@ const SigninForm: React.FC<signupProp> = ({ dismissModal }) => {
 
 
 
-        <Button style={styles.submitBtn} status="primary" onPress={() => {
-          handleSubmit()
-        }} >
-          Login
-        </Button>
+        <Button onPress={() => {
+                        setLoginBtnPressed(true)
+                        setTimeout(() => {
+                        setLoginBtnPressed(false)
+                        }, 450);
+                        handleSubmit();
+                            }} style={[styles.loginBtn, {borderBottomWidth: loginBtnPressed ? 0 : 3}]} appearance='outline'  status='primary'>
+                              {evaProps => <Text  {...evaProps} style={{color:"#ffffff"}}>Login</Text>}</Button>
 </View>
 
 }
@@ -200,14 +204,14 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 
-  submitBtn: {
-    marginTop: 15,
-    backgroundColor: theme['btn-bg-color'],
-    borderColor:"transparent",
-    borderWidth: 3,
-    borderRadius: 30,
-    borderBottomColor: theme.secondary,
-  },
+
+  loginBtn: {
+      marginTop: 15,
+      backgroundColor: theme["btn-bg-color"],
+      borderColor: "transparent",
+      borderRadius: 30,
+      borderBottomColor: theme.secondary,
+    },
 
   button: {
     width: "100%",

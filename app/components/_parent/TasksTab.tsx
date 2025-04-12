@@ -30,7 +30,7 @@ const TasksTab = () => {
       {filteredTasks.length > 0 ? (
         <FlatList
           data={filteredTasks}
-          keyExtractor={(item) => item.date.dateString}
+          keyExtractor={(_, index) => index.toString()}
           renderItem={({ item }) => (
             <Layout style={styles.tasksCard}>
               <Gradient from={theme['gradient-from']} to={theme['gradient-to']} />
@@ -41,7 +41,7 @@ const TasksTab = () => {
                   const taskObj = typeof task === 'string' ? { description: task } : task;
                   return (
                     <Layout key={index} style={styles.taskDescription}>
-                      <MaterialCommunityIcons name="hexagon-outline" size={10} color="black" />
+                      <MaterialCommunityIcons name="hexagon-outline" size={10} color={theme.tertiary} />
                       <Text style={{ color: "#ffffff70" }}>{taskObj.description}</Text>
                     </Layout>
                   );
@@ -80,10 +80,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: theme['btn-bg-color'],
+
     width: "100%",
     columnGap: 5,
     paddingVertical: 5,
-    borderRadius: 3,
+    borderRadius: 5,
     marginTop: 10,
   }
 
