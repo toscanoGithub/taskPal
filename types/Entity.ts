@@ -48,7 +48,9 @@ export interface Task {
     date: DateData;
     parent: Parent;
     toFamilyMember: string;
-    description: string
+    description: string,
+    tasks: TaskItem[];
+    
 }
 
 

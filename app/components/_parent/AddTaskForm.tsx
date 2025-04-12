@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 import { Button, Input, Text } from '@ui-kitten/components';
 import theme from "../../theme.json"
 import { useTaskContext } from '@/contexts/TaskContext';
-import { Task } from '@/types/Entity';
+import { Task } from '@/contexts/TaskContext';
 import { useUserContext } from '@/contexts/UserContext';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 
@@ -30,7 +30,7 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({date, dismiss, toFamilyMember}
     const [tempTasks, setTempTasks] = useState<Task[]>([])
 
     useEffect(() => {
-      const tasksInCurrentDay = tasks.filter(task => task.id !== null && task.date.timestamp === date?.timestamp)
+      const tasksInCurrentDay = tasks?.filter(task => task.id !== null && task.date.timestamp === date?.timestamp)
       setCurrentDayTask(tasksInCurrentDay[0])      
     }, [tasks])
     
@@ -96,7 +96,7 @@ export default AddTaskForm
 
 const styles = StyleSheet.create({
   modalTitle: {
-    marginTop: 40,
+    marginTop: 30,
     marginBottom:0,
     textAlign: 'center',
     color: "#EDB232"

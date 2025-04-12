@@ -31,7 +31,7 @@ const AuthScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Gradient />
+      <Gradient from={theme['gradient-from']} to={theme['gradient-to']} />
       <View style={styles.buttonsRow}>
         {/* SIGN IN BUTTON */}
         <Button onPress={() => {
@@ -54,7 +54,7 @@ const AuthScreen = () => {
           }, 450);
           setModalType("SIGN UP")
           setModalIsVisible(true);
-            }} style={[styles.authBtn, {borderBottomWidth: signupPressed ? 0 : 3}]} appearance='outline'  status='primary'>
+            }} style={[styles.authBtn, {borderBottomWidth: signinPressed ? 0 : 3}]} appearance='outline'  >
               {evaProps => <Text  {...evaProps} style={{color:"#ffffff"}}>SIGN UP</Text>}</Button>
 
        
@@ -115,6 +115,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor:theme['gradient-to']
   },
 
   buttonsRow: {
@@ -134,10 +135,11 @@ const styles = StyleSheet.create({
   
 
   authBtn: {
-       borderRadius: 30, paddingHorizontal: 30, 
+       borderRadius: 30, 
+       paddingHorizontal: 30, 
        backgroundColor: theme["btn-bg-color"], 
-       borderColor: "transparent",
-       borderBottomColor: theme.secondary,
+       borderColor: theme['gradient-from'],
+       borderBottomColor: theme["secondary"],
        minWidth: 150,
   },
 
