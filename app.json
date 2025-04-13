@@ -1,0 +1,60 @@
+{
+  "expo": {
+    "name": "taskPal",
+    "slug": "taskpal",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "myapp",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.toscano.taskpal",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "extra": {
+      "apiKey": "AIzaSyCIDj80kzP8cT4jfmNDGEsGvJhGznvxCNQ",
+      "authDomain": "taskpal-c9641.firebaseapp.com",
+      "projectId": "taskpal-c9641",
+      "storageBucket": "taskpal-c9641.firebasestorage.app",
+      "messagingSenderId": "646075363527",
+      "appId": "1:646075363527:web:4582c59d3144c177f8cee2",
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "ea171f3b-ef2b-4ec5-a774-4bcc21518260"
+      }
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "owner": "toscano"
+  }
+}
