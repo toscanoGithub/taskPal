@@ -1,10 +1,10 @@
-import { StyleSheet, Switch, Text, View } from 'react-native'
+import { Platform, StyleSheet, Switch, Text, View } from 'react-native'
 import React, { useState } from 'react'
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { Input, Button, Toggle } from '@ui-kitten/components';
 import theme from "../theme.json"
-
+import * as Device from 'expo-device';
 
 // Firebase
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, Auth } from "firebase/auth";
@@ -41,6 +41,7 @@ const SigninForm: React.FC<signupProp> = ({ dismissModal }) => {
   const auth = getAuth();
   const router = useRouter();
   const [loginBtnPressed, setLoginBtnPressed] = useState(false)
+  const isTablet = Device.deviceType === Device.DeviceType.TABLET;
 
   // REGISTER LOGIC
   const signin = async (values: FormValues) => {
@@ -106,12 +107,12 @@ const SigninForm: React.FC<signupProp> = ({ dismissModal }) => {
       onValueChange={toggleSwitch}
       value={isEnabled}
     /> 
-    <Text style={{fontSize: 20, color: `${isEnabled ? theme["secondary"] : theme["gradient-to"]}`}}>I'm a family member</Text>
+    <Text style={{fontSize: isTablet ? 30 : 18, color: `${isEnabled ? theme["secondary"] : theme["gradient-to"]}`}}>I'm a family member</Text>
   </View>
     <Formik 
         initialValues={{
-          email: 'parent@task.pal',
-          password: 'qwerty',
+          email: '',
+          password: '',
           name: ""
         }}
         validationSchema={validationSchema}
@@ -125,6 +126,7 @@ const SigninForm: React.FC<signupProp> = ({ dismissModal }) => {
   
   {/* EMAIL */}
         <Input
+          textStyle={{ fontSize: isTablet ? 30 : 18 }}
           style={styles.input}
           placeholder={isEnabled ? "Your parent's email" : "Your email"}
           value={values.email}
@@ -138,6 +140,7 @@ const SigninForm: React.FC<signupProp> = ({ dismissModal }) => {
 {/* PASSWORD */}
         {
           !isEnabled && <><Input
+          textStyle={{ fontSize: isTablet ? 30 : 18 }}
           style={styles.input}
           placeholder='Password'
           value={values.password}
@@ -151,6 +154,7 @@ const SigninForm: React.FC<signupProp> = ({ dismissModal }) => {
 {/* Name */}
         {
           isEnabled && <><Input
+          textStyle={{ fontSize: isTablet ? 30 : 18 }}
           style={styles.input}
           placeholder='Your name'
           value={values.name}
@@ -171,7 +175,7 @@ const SigninForm: React.FC<signupProp> = ({ dismissModal }) => {
                         }, 450);
                         handleSubmit();
                             }} style={[styles.loginBtn, {borderBottomWidth: loginBtnPressed ? 0 : 3}]} appearance='outline'  status='primary'>
-                              {evaProps => <Text  {...evaProps} style={{color:"#ffffff"}}>Login</Text>}</Button>
+                              {evaProps => <Text  {...evaProps} style={{color:"#ffffff", fontSize: isTablet ? 30 : 18}}>Login</Text>}</Button>
 </View>
 
 }
@@ -195,7 +199,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#3A7174",
         borderWidth: 1,
         borderColor: "#DDCA8750",
-        color: "white"
+        color: "black",
   },
 
   errorText: {
