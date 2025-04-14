@@ -50,7 +50,8 @@
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
     "yup": "^1.6.1",
-    "expo-dev-client": "~5.0.19"
+    "expo-dev-client": "~5.0.19",
+    "expo-device": "~7.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

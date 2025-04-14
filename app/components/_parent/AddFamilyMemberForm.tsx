@@ -6,6 +6,7 @@ import { Button, Input, Text } from '@ui-kitten/components';
 import { FamilyMember } from '@/types/Entity';
 import { useUserContext } from '@/contexts/UserContext';
 import theme from "../../theme.json"
+import * as Device from 'expo-device';
 
 interface AddFamilyMemberFormProps {
   dismiss: () => void;
@@ -23,6 +24,7 @@ const validationSchema = Yup.object().shape({
 
 const AddFamilyMemberForm: React.FC<AddFamilyMemberFormProps> = ({ dismiss }) => {
   const { user, updateUser } = useUserContext();
+  const isTablet = Device.deviceType === Device.DeviceType.TABLET;
 
   useEffect(() => {
     // Any side effects to manage
@@ -66,6 +68,7 @@ const AddFamilyMemberForm: React.FC<AddFamilyMemberFormProps> = ({ dismiss }) =>
           <View style={styles.inputsWrapper}>
             {/* FULL NAME */}
             <Input
+              textStyle={{ fontSize: isTablet ? 30 : 18 }}
               style={styles.input}
               placeholder="Enter name"
               value={values.name}
@@ -77,6 +80,7 @@ const AddFamilyMemberForm: React.FC<AddFamilyMemberFormProps> = ({ dismiss }) =>
 
             {/* PASSCODE */}
             <Input
+              textStyle={{ fontSize: isTablet ? 30 : 18 }}
               style={styles.input}
               placeholder="Enter a Passcode | Keep it simple..."
               value={values.passcode}

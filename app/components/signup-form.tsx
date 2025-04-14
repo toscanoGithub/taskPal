@@ -4,6 +4,7 @@ import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { Input, Button, Toggle } from '@ui-kitten/components';
 import theme from "../theme.json"
+import * as Device from 'expo-device';
 
 
 // Firebase
@@ -38,6 +39,8 @@ const validationSchema = Yup.object().shape({
 const SignupForm: React.FC<signupProp> = ({ dismissModal }) => {
   const {setUser} = useUserContext();
   const [registerBtnPressed, setRegisterBtnPressed] = useState(false)
+  const isTablet = Device.deviceType === Device.DeviceType.TABLET;
+  
   // REGISTER LOGIC
  const register = (values: FormValues) => {
       const {name, email, password, confirmPassword} = values;
@@ -78,10 +81,10 @@ console.error("Error adding document: ", e);
       
     <Formik 
         initialValues={{
-          email: 'parent@task.pal',
-          password: 'qwerty',
-          confirmPassword: 'qwerty',
-          name: 'Parent',
+          email: '',
+          password: '',
+          confirmPassword: '',
+          name: '',
           isFamilyMember: false,
         }}
         validationSchema={validationSchema}
@@ -97,6 +100,7 @@ console.error("Error adding document: ", e);
   
   {/* Name */}
   <Input
+          textStyle={{ fontSize: isTablet ? 30 : 18 }}
           style={styles.input}
           placeholder='Your name'
           value={values.name}
@@ -109,6 +113,7 @@ console.error("Error adding document: ", e);
 
   {/* EMAIL */}
         <Input
+          textStyle={{ fontSize: isTablet ? 30 : 18 }}
           style={styles.input}
           placeholder='Email'
           value={values.email}
@@ -121,6 +126,7 @@ console.error("Error adding document: ", e);
 
 {/* PASSWORD */}
         <Input
+          textStyle={{ fontSize: isTablet ? 30 : 18 }}
           style={styles.input}
           placeholder='Password'
           value={values.password}
@@ -133,6 +139,7 @@ console.error("Error adding document: ", e);
 
 {/* CONFIRM PASSWORD */}
         <Input
+          textStyle={{ fontSize: isTablet ? 30 : 18 }}
           style={styles.input}
           placeholder='Confirm password'
           value={values.confirmPassword}
@@ -150,7 +157,7 @@ console.error("Error adding document: ", e);
                 }, 450);
                 handleSubmit();
                     }} style={[styles.registerBtn, {borderBottomWidth: registerBtnPressed ? 0 : 3}]} appearance='outline'  status='primary'>
-                      {evaProps => <Text  {...evaProps} style={{color:"#ffffff"}}>Register</Text>}</Button>
+                      {evaProps => <Text  {...evaProps} style={{color:"#ffffff", fontSize: isTablet ? 30 : 18}}>Register</Text>}</Button>
 </View>
 
 }

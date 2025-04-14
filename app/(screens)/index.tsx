@@ -6,13 +6,15 @@ import { Button, Icon, IconElement, Text } from '@ui-kitten/components';
 import SignupForm from '../components/signup-form';
 import SigninForm from '../components/signin-form';
 import Gradient from '../components/Gradient';
+import { StatusBar } from 'expo-status-bar';
+import * as Device from 'expo-device';
 
 
 const closeIcon = (props: any): IconElement => (
   <Icon
     {...props}
     name="close-circle"
-    style={{width: 30, height: 30}}
+    style={{width: 50, height: 50}}
     fill="#EDB23270"
   />
 );
@@ -24,6 +26,7 @@ const AuthScreen = () => {
     const [modalType, setModalType] = useState("SIGN IN")
     const [signinPressed, setSigninPressed] = useState(false)
     const [signupPressed, setSignupPressed] = useState(false)
+  const isTablet = Device.deviceType === Device.DeviceType.TABLET;
 
     const dismissModal = () => {
         setModalIsVisible(!modalIsVisible)
@@ -31,6 +34,7 @@ const AuthScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar hidden={true} />
       <Gradient from={theme['gradient-from']} to={theme['gradient-to']} />
       <View style={styles.buttonsRow}>
         {/* SIGN IN BUTTON */}
@@ -43,7 +47,7 @@ const AuthScreen = () => {
             setModalIsVisible(true)
         }} style={[styles.authBtn, {borderBottomWidth: signinPressed ? 0 : 3} ]} appearance='outline' 
          status='primary'>
-          {evaProps => <Text  {...evaProps} style={{color:"#ffffff"}}>SIGN IN</Text>}</Button>
+          {evaProps => <Text  {...evaProps} style={{color:"#ffffff", fontSize: isTablet ? 30 : 18}}>SIGN IN</Text>}</Button>
         
         
        {/* SIGN UP BUTTON */}
@@ -55,7 +59,7 @@ const AuthScreen = () => {
           setModalType("SIGN UP")
           setModalIsVisible(true);
             }} style={[styles.authBtn, {borderBottomWidth: signupPressed ? 0 : 3}]} appearance='outline'  >
-              {evaProps => <Text  {...evaProps} style={{color:"#ffffff"}}>SIGN UP</Text>}</Button>
+              {evaProps => <Text  {...evaProps} style={{color:"#ffffff", fontSize: isTablet ? 30 : 18}}>SIGN UP</Text>}</Button>
 
        
       </View>
@@ -198,7 +202,7 @@ const styles = StyleSheet.create({
     closeBtn: {
       position: "absolute",
       left: 0,
-      top:0,
+      top:-15,
 
     }
 })

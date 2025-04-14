@@ -9,6 +9,7 @@ import { useTaskContext } from '@/contexts/TaskContext';
 import { Task } from '@/contexts/TaskContext';
 import { useUserContext } from '@/contexts/UserContext';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
+import * as Device from 'expo-device';
 
 
 interface AddTaskFormProps {
@@ -26,8 +27,8 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({date, dismiss, toFamilyMember}
     const {tasks, addTaskToContext} = useTaskContext()
     const [currentDayTask, setCurrentDayTask] = useState<Task>()
     const {user} = useUserContext();
-
     const [tempTasks, setTempTasks] = useState<Task[]>([])
+    const isTablet = Device.deviceType === Device.DeviceType.TABLET;
 
     useEffect(() => {
       const tasksInCurrentDay = tasks?.filter(task => task.id !== null && task.date.timestamp === date?.timestamp)
@@ -64,6 +65,7 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({date, dismiss, toFamilyMember}
                     <View style={{width:"100%", flexDirection: "row", justifyContent:"space-between", alignItems:"center"}}>
                       {/* DESCRIPTION */}
                     <Input
+                        textStyle={{ fontSize: isTablet ? 30 : 18 }}
                         style={styles.input}
                         placeholder='Task description'
                         value={ values.description}
