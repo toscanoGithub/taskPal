@@ -13,9 +13,9 @@ import * as Device from 'expo-device';
 const closeIcon = (props: any): IconElement => (
   <Icon
     {...props}
-    name="close-circle"
-    style={{width: 50, height: 50}}
-    fill="#EDB23270"
+    name="close"
+    style={{width: 50, height: 50, opacity: 0.6}}
+    fill="#ff0000"
   />
 );
 
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
       position:"absolute",
       bottom:0,
       left:0, right:0,
-      backgroundColor: theme['gradient-from'],
+      backgroundColor: "#F6F6F6",
       borderTopLeftRadius: 45,
       // padding: 35,
       alignItems: 'center',
@@ -193,10 +193,10 @@ const styles = StyleSheet.create({
       textAlign: 'center',
     },
     modalTitle: {
-      marginTop: 20,
+      marginTop: 30,
       marginBottom:0,
       textAlign: 'center',
-      color: theme.secondary
+      color: theme['gradient-to']
     },
 
     closeBtn: {

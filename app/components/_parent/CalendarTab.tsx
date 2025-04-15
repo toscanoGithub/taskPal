@@ -15,6 +15,7 @@ import { Alert } from 'react-native';
 import AddFamilyMemberForm from './AddFamilyMemberForm';
 import { FamilyMember } from '@/types/Entity';
 import Popover from 'react-native-popover-view';
+import * as Device from 'expo-device';
 
 
 
@@ -32,6 +33,10 @@ const CalendarTab = () => {
   const {fetchTasks} = useTaskContext()
 
   const [isDialogVisible, setIsDialogVisible] = useState<boolean>(false);
+  const isTablet = Device.deviceType === Device.DeviceType.TABLET;
+
+  
+
 
   const memberSelected = (member: FamilyMember) => {
     if (member.name === selectedFamilyMember) {
@@ -51,7 +56,7 @@ const CalendarTab = () => {
     }
 
     setModalType("ADD_TASK");
-    if (date.dateString < new Date().toLocaleDateString()) return;
+    // if (date.dateString < new Date().toLocaleDateString()) return;
 
     
 
@@ -115,11 +120,11 @@ const CalendarTab = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Text style={styles.greetings} category="h4">Welcome, </Text>
-          <Text style={styles.greetings} category="h4">{user?.name}</Text>
+          <Text style={[styles.greetings, {fontSize: isTablet ? 30 : 18}]} category="h2">Welcome, </Text>
+          <Text style={[styles.greetings, {fontSize: isTablet ? 30 : 18}]} category="h1">{user?.name}</Text>
         </View>
        {
-        !selectedFamilyMember &&  <Text style={styles.instructions} category="s2">
+        !selectedFamilyMember &&  <Text style={[styles.instructions, {fontSize: isTablet ? 30 : 18}]} category="s2">
         Please, select a family member .
       </Text>  
        }
@@ -128,8 +133,8 @@ const CalendarTab = () => {
       {user?.members && (
         <View style={{ flexDirection: "row", width: "100%", paddingHorizontal: 10, justifyContent: "space-between", alignItems: "center" }}>
           
-          <Text style={{fontSize: 16, color: theme['gradient-to']}} category='h6'>{selectedFamilyMember}</Text>
-          <View style={{ marginLeft: "auto" }}>
+          <Text style={{fontSize: isTablet ? 50 : 18, color: theme['gradient-to']}} category='h6'>{selectedFamilyMember}</Text>
+          <View style={{ marginLeft: "auto", marginVertical: 10 }}>
             <Popover
               isVisible={isPopoverContentVisible}
               popoverStyle={{ backgroundColor: theme["gradient-to"], backfaceVisibility: "hidden", width: 150 }}
@@ -141,7 +146,7 @@ const CalendarTab = () => {
                     setIsPopoverContentVisible(!isPopoverContentVisible)
                   }}
                 >
-                  <Text category="h6" style={{ color: theme.secondary, fontSize: 12, fontWeight: 900 }}>
+                  <Text category="h6" style={{ color: theme.secondary, fontSize: isTablet ? 30 : 12, fontWeight: 900 }}>
                     {user.members && user.members.length ? "Select a family member" : "No family members yet"}
                   </Text>
                 </TouchableOpacity>
@@ -152,7 +157,7 @@ const CalendarTab = () => {
                   fetchTasks()
                   memberSelected(member)
                 }} key={member.name}>
-                  {evaProps => <Text style={{ color: "white", fontSize: 14, ...evaProps }}>{member.name}</Text>}
+                  {evaProps => <Text style={{ color: "white", fontSize: isTablet ? 30 : 18, ...evaProps }}>{member.name}</Text>}
                 </Button>
               ))}
             </Popover>
@@ -163,10 +168,12 @@ const CalendarTab = () => {
       {user?.members?.length ? (
         <View style={styles.calendarContainer}>
           <Calendar
-            theme={{ calendarBackground: "#ffffff" , dayTextColor:"black"}}
-            date={'2025-01-01'}
-            minDate={new Date().toLocaleDateString()}
+          style={{ backgroundColor: "#ffffff", height: isTablet && 800 }}
+            theme={{weekVerticalMargin: isTablet ? 50 : 5,  calendarBackground: "#ffffff", dayTextColor:"black", textDayFontWeight: 400, textDayFontSize: isTablet ? 24 : 18, textMonthFontSize: isTablet ? 30 : 18, textMonthFontWeight: 700, }}
+            minDate={new Date().toISOString().split('T')[0]}
             maxDate={'2080-12-31'}
+            date={new Date().toLocaleDateString()}
+            
             onDayPress={handleDayPress}
             monthFormat={'yyyy MMM'}
             renderArrow={(direction: Direction) => (
@@ -229,11 +236,10 @@ const styles = StyleSheet.create({
   },
   greetings: {
     fontWeight: 700,
-    fontSize: 16,
-    lineHeight: 24,
+    
   },
   instructions: {
-    fontSize: 16,
+    
     fontWeight: 300,
     color: "#2B2B2B",
   },
@@ -253,7 +259,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: theme.secondary,
+    backgroundColor: "#F6F6F6",
     borderTopLeftRadius: 30,
     overflow: "hidden",
     alignItems: 'center',
@@ -280,15 +286,6 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
 
-  likeImageBtn: {
-    width: 40,  // width of the image
-    height: 40, // height of the image,
-  },
-
-  likeImage: {
-    width: "100%",  // width of the image
-    height: "100%", // height of the image
-    resizeMode: 'contain', // or 'cover', 'stretch', etc.
-  }
+  
 });
 

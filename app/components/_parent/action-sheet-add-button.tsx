@@ -2,8 +2,8 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Entypo from '@expo/vector-icons/Entypo';
-
 import theme from "../../theme.json"
+import * as Device from 'expo-device';
 
 interface ActionButtonProps {
     onPress: () => void;
@@ -12,11 +12,13 @@ interface ActionButtonProps {
   }
 
 const ActionSheetAddButton: React.FC<ActionButtonProps> = ({ onPress, iconName, type }) => {
+  const isTablet = Device.deviceType === Device.DeviceType.TABLET;
+  
   return (
     <TouchableOpacity style={styles.button} onPress={() => onPress()}>
-      <View style={styles.iconWrapper}>
+      <View style={[styles.iconWrapper, {width: isTablet ? 100 : 50, height: isTablet ? 100: 50}]}>
         {/* <MaterialIcons name={iconName as string | any} size={30} color="white" /> */}
-        <AntDesign name="adduser" size={24} color={theme["secondary"]} />
+        <AntDesign name="adduser" size={isTablet ? 50 : 25} color={theme["secondary"]} />
       </View>
     </TouchableOpacity>
   )
@@ -30,9 +32,8 @@ const styles = StyleSheet.create({
         right: 20,
         bottom: 5,
         backgroundColor: theme["gradient-from"], // Tomato color
-        width: 60,
-        height: 60,
-        borderRadius: 30,
+        
+        borderRadius: "50%",
         justifyContent: 'center',
         alignItems: 'center',
         elevation: 30, // Adds shadow on Android
