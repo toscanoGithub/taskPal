@@ -33,7 +33,7 @@ const AddFamilyMemberForm: React.FC<AddFamilyMemberFormProps> = ({ dismiss }) =>
   return (
     <View>
       {/* MODAL TITLE */}
-      <Text category="h4" style={styles.modalTitle}>
+      <Text category="h4" style={[styles.modalTitle, { fontSize: isTablet ? 50 : 20 }]}>
         Add Family Member
       </Text>
 
@@ -99,7 +99,7 @@ const AddFamilyMemberForm: React.FC<AddFamilyMemberFormProps> = ({ dismiss }) =>
               style={styles.submitBtn}
               status="primary"
             >
-              {evaProps => <Text style={{ ...evaProps, color: "#EDB232", fontSize: 20 }}>
+              {evaProps => <Text style={{ ...evaProps, color: "#EDB232", fontSize: isTablet ? 30 : 18 }}>
                 Add new family member
               </Text>}
             </Button>
@@ -114,12 +114,11 @@ export default AddFamilyMemberForm;
 
 const styles = StyleSheet.create({
   modalTitle: {
-    marginTop: 40,
-    marginBottom: 0,
+    marginTop: 70,
+    marginBottom: 20,
     textAlign: 'center',
-    color: theme['btn-bg-color'],
-    fontSize: 24,
-    lineHeight: 36,
+    color: theme.secondary,
+    
   },
   selectedDate: {
     textAlign: "center",

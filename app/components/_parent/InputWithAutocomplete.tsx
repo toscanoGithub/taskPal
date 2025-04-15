@@ -4,6 +4,7 @@ import { FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { useUserContext } from '@/contexts/UserContext';
 import theme from "../../theme.json"
 import { FamilyMember } from '@/types/Entity';
+import * as Device from 'expo-device';
 
 interface InputWithAutocompleteProps {
   getMemberNameValue: (name: string) => void;
@@ -15,6 +16,7 @@ const InputWithAutocomplete: React.FC<InputWithAutocompleteProps> = ({getMemberN
   const [suggestions, setSuggestions] = useState<FamilyMember[]>([]);
   const {user} = useUserContext()
   const [membersForUser, setMembersForUser] = useState<FamilyMember[]>([])
+    const isTablet = Device.deviceType === Device.DeviceType.TABLET;
   
   useEffect(() => {
     if(user?.members) {
@@ -47,7 +49,8 @@ const InputWithAutocomplete: React.FC<InputWithAutocompleteProps> = ({getMemberN
           placeholder={placeholder}
           value={query}
           onChangeText={handleInputChange}
-          style={styles.input}
+          textStyle={{ fontSize: isTablet ? 30 : 18, paddingVertical: isTablet ? 8 : 0, color: "black", fontWeight: 300 }}
+          style={[styles.input, {paddingVertical: isTablet ? 15 : 5, width: isTablet ? "80%" : "100%",}]}
         />
         {suggestions.length > 0 && (
           <FlatList
@@ -55,10 +58,10 @@ const InputWithAutocomplete: React.FC<InputWithAutocompleteProps> = ({getMemberN
             keyExtractor={(item) => item.name}
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => handleSuggestionPress(item.name)}>
-                <Text style={styles.suggestion}>{item.name}</Text>
+                <Text style={[styles.suggestion, {fontSize: isTablet ? 30 : 18, }]}>{item.name}</Text>
               </TouchableOpacity>
             )}
-            style={styles.suggestionsList}
+            style={[styles.suggestionsList, {width: isTablet ? "80%" : "100%", height: isTablet ? 400 : 200, }]}
           />
         )}
   
@@ -69,10 +72,7 @@ export default InputWithAutocomplete
 
 const styles = StyleSheet.create({
   input: {
-    width:"100%",
-        paddingTop: 5,
-        marginBottom: 15,
-        
+           
         backgroundColor: "#EDF2FA",
         borderWidth: 1,
         borderColor: theme['gradient-to'],
@@ -80,16 +80,20 @@ const styles = StyleSheet.create({
         color: "white",
   },
   suggestionsList: {
-    maxHeight: 150,
     borderWidth: 1,
     borderColor: 'gray',
     borderRadius: 5,
+    
+    color: theme.secondary,
   },
   suggestion: {
-    padding: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
     borderBottomWidth: 0.5,
-    borderBottomColor: theme["gradient-to"],
-    backgroundColor: "white"
+    borderBottomColor: "#ffffff",
+    backgroundColor: theme['gradient-to'],
+    color: theme.secondary,
+
   },
   
 })

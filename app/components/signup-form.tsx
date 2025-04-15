@@ -172,13 +172,13 @@ const styles = StyleSheet.create({
   inputsWrapper: {
     flex: 1,
     width:"100%",
-    marginTop: 30,
+    marginTop: 20,
   },
 
   input: {
     width:"100%",
-        paddingVertical: 15,
-        backgroundColor: "#3A7174",
+        paddingVertical: 10,
+        backgroundColor: "#F2F2F2",
         borderWidth: 1,
         borderColor: "#DDCA8750",
         color: "white"

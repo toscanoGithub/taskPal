@@ -1,8 +1,8 @@
-import { Platform, StyleSheet, Switch, Text, View } from 'react-native'
+import { Platform, StyleSheet, Switch, View } from 'react-native'
 import React, { useState } from 'react'
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
-import { Input, Button, Toggle } from '@ui-kitten/components';
+import { Input, Button, Text } from '@ui-kitten/components';
 import theme from "../theme.json"
 import * as Device from 'expo-device';
 
@@ -107,12 +107,12 @@ const SigninForm: React.FC<signupProp> = ({ dismissModal }) => {
       onValueChange={toggleSwitch}
       value={isEnabled}
     /> 
-    <Text style={{fontSize: isTablet ? 30 : 18, color: `${isEnabled ? theme["secondary"] : theme["gradient-to"]}`}}>I'm a family member</Text>
+    <Text category='h1'  style={{fontSize: isTablet ? 30 : 18,  color: `${isEnabled ? theme["gradient-to"] : "#ccc"}`}}>I'm a family member</Text>
   </View>
     <Formik 
         initialValues={{
-          email: '',
-          password: '',
+          email: 'jdoe@task.pal',
+          password: 'qwerty',
           name: ""
         }}
         validationSchema={validationSchema}
@@ -191,14 +191,15 @@ const styles = StyleSheet.create({
   inputsWrapper: {
     flex: 1,
     width:"100%",
+    marginTop: 20,
   },
 
   input: {
     width:"100%",
-        paddingVertical: 15,
-        backgroundColor: "#3A7174",
+        paddingVertical: 10,
+        backgroundColor: "#F2F2F2",
         borderWidth: 1,
-        borderColor: "#DDCA8750",
+        // borderColor: "#DDCA8750",
         color: "black",
   },
 

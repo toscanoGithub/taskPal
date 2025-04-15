@@ -98,7 +98,7 @@ export default AddTaskForm
 
 const styles = StyleSheet.create({
   modalTitle: {
-    marginTop: 30,
+    marginTop: 70,
     marginBottom:0,
     textAlign: 'center',
     color: "#EDB232"
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     inputsWrapper: {
         flex: 1,
         width:"100%",
-        marginTop: 30,
+        marginTop: 50,
       },
     
       input: {

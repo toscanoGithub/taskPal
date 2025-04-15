@@ -6,6 +6,7 @@ import { useUserContext } from '@/contexts/UserContext';
 import { getAuth, signOut } from 'firebase/auth';
 import { useRouter } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import * as Device from 'expo-device';
 
 
 
@@ -14,6 +15,7 @@ const Header = () => {
   const auth = getAuth();
   const {user, setUser} = useUserContext()
   const router = useRouter()
+  const isTablet = Device.deviceType === Device.DeviceType.TABLET;
 
   const handleSignout = () => {
     if(!user?.isFamilyMember) {
@@ -34,11 +36,11 @@ const Header = () => {
     return (
     <View style={styles.container}>
       <View style={styles.row}>
-        <Text style={styles.username}  category='h4'>{user?.name}</Text>
+        <Text style={[styles.username, {fontSize: isTablet ? 30 : 18,}]}  category='h4'>{user?.name}</Text>
         
         {/* SIGNOUT BUTTON */}
         <TouchableOpacity onPress={handleSignout} style={{marginLeft:"auto"}}>
-          <Ionicons name="exit-outline" size={34} color={theme["secondary"]} />
+          <Ionicons name="exit-outline" size={isTablet ? 50 : 34} color={theme["secondary"]} />
         </TouchableOpacity>
       </View>
     </View>
@@ -64,10 +66,9 @@ const styles = StyleSheet.create({
 
     username: {
       color: theme.secondary,
-      fontSize: 20,
-      fontWeight: 200,
-      letterSpacing: 1,
-
+      
+      fontWeight: 700,
+      textTransform: "capitalize"
     }
 
 
