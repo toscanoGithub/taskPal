@@ -68,7 +68,7 @@ const AddFamilyMemberForm: React.FC<AddFamilyMemberFormProps> = ({ dismiss }) =>
           <View style={styles.inputsWrapper}>
             {/* FULL NAME */}
             <Input
-              textStyle={{ fontSize: isTablet ? 30 : 18 }}
+              textStyle={{ fontSize: isTablet ? 30 : 20, color: "white" }}
               style={styles.input}
               placeholder="Enter name"
               value={values.name}
@@ -76,11 +76,11 @@ const AddFamilyMemberForm: React.FC<AddFamilyMemberFormProps> = ({ dismiss }) =>
               onBlur={handleBlur('name')}
               status={touched.name && errors.name ? 'danger' : 'basic'}
             />
-            {touched.name && errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
+        {touched.name && errors.name && <Text style={[styles.errorText, {marginBottom: isTablet ? 15 : 0, fontSize: isTablet ? 30 : 18}]}>{errors.name}</Text>}
 
             {/* PASSCODE */}
             <Input
-              textStyle={{ fontSize: isTablet ? 30 : 18 }}
+              textStyle={{ fontSize: isTablet ? 30 : 20, color: "white" }}
               style={styles.input}
               placeholder="Enter a Passcode | Keep it simple..."
               value={values.passcode}
@@ -88,7 +88,7 @@ const AddFamilyMemberForm: React.FC<AddFamilyMemberFormProps> = ({ dismiss }) =>
               onBlur={handleBlur('passcode')}
               status={touched.passcode && errors.passcode ? 'danger' : 'basic'}
             />
-            {touched.passcode && errors.passcode && <Text style={styles.errorText}>{errors.passcode}</Text>}
+        {touched.passcode && errors.passcode && <Text style={[styles.errorText, {marginBottom: isTablet ? 15 : 0, fontSize: isTablet ? 30 : 18}]}>{errors.passcode}</Text>}
 
             {/* Submit Button */}
             <Button
@@ -139,16 +139,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#DDCA8750",
     borderRadius: 15,
-    color: "white"
   },
   errorText: {
     color: 'red',
     marginTop: -15,
   },
   submitBtn: {
-    marginTop: 15,
-    borderRadius: 50,
-    borderWidth: 1,
-    borderColor: "#DDCA8750"
+    backgroundColor: theme["btn-bg-color"],
+    borderColor: "transparent",
+    borderRadius: 30,
+    borderBottomColor: theme.secondary,
+    marginTop: 30
   },
 });

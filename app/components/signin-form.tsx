@@ -46,6 +46,11 @@ const SigninForm: React.FC<SigninProp> = ({ dismissModal }) => {
 
   // REGISTER LOGIC
   const signin = async (values: FormValues) => {
+    if(isEnabled && values.name === "") {
+      alert("Please enter your name")
+      return;
+    }
+
   /*query the email
       if success >> check if isFamilyMember.
       if not  >> normal signInWithEmailAndPassword
@@ -156,7 +161,7 @@ const SigninForm: React.FC<SigninProp> = ({ dismissModal }) => {
 {/* Name */}
         {
           isEnabled && <><Input
-          textStyle={{ fontSize: isTablet ? 30 : 18 }}
+          textStyle={{ fontSize: isTablet ? 30 : 20, color: "white" }}
           style={styles.input}
           placeholder='Your name'
           value={values.name}
@@ -164,7 +169,7 @@ const SigninForm: React.FC<SigninProp> = ({ dismissModal }) => {
           onBlur={handleBlur('name')}
           status={touched.name && errors.name ? 'danger' : 'basic'}
         />
-        {touched.name && errors.name && <Text style={styles.errorText}>{errors.name}</Text>}</>
+         {touched.name && errors.name && <Text style={styles.errorText}>{errors.name}</Text>}</>
         }
 
 
@@ -198,12 +203,11 @@ const styles = StyleSheet.create({
 
   input: {
     width:"100%",
-    paddingVertical: 15,
-    backgroundColor: theme['btn-bg-color'],
-    borderWidth: 1,
-    borderColor: "#DDCA8750",
-    borderRadius: 15,
-    color: "white"
+        paddingVertical: 15,
+        backgroundColor: theme['btn-bg-color'],
+        borderWidth: 1,
+        borderColor: "#DDCA8750",
+        borderRadius: 15,
   },
 
   errorText: {

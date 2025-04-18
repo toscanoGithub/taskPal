@@ -14,6 +14,7 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import db from '@/firebase/firebase-config';
 import theme from "../theme.json"
 import { useRouter } from 'expo-router';
+import * as Device from 'expo-device';
 
 interface TaskItem {
   description: string;
@@ -31,9 +32,8 @@ const ChildScreen = () => {
   const [modalType, setModalType] = useState<string>();
   const [tasksForSelectedDay, settasksForSelectedDay] = useState<TaskItem[]>([]);
   const [showTask, setShowTask] = useState(false);
-
-
   const router = useRouter()
+  const isTablet = Device.deviceType === Device.DeviceType.TABLET;
 
 
 
@@ -88,31 +88,34 @@ const ChildScreen = () => {
     }
 
     setSelectedDate(date);
-    setShowTask(!showTask);
+    setShowTask(true);
   };
 
 
  
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
   
       <View style={styles.header}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Text style={styles.greetings} category="h4">Welcome, </Text>
-          <Text style={styles.greetings} category="h4">{user?.name}</Text>
+          <Text style={[styles.greetings, {fontSize: isTablet ? 30 : 18}]} category="h2">Welcome, </Text>
+          <Text style={[styles.greetings, {fontSize: isTablet ? 30 : 18}]} category="h1">{user?.name}</Text>
         </View>
-        <Text style={styles.instructions} category="s2">
-          Interact with the calendar below to see your tasks.
-        </Text>
+        
+        <Text style={[styles.instructions, {fontSize: isTablet ? 30 : 18}]} category="s2">
+        Interact with the calendar below to see your tasks.
+      </Text>  
+        
       </View>
 
       <View style={styles.calendarContainer}>
         <Calendar
-          theme={{ calendarBackground: "#ffffff" , dayTextColor:"black"}}
-          date="2025-01-01"
-          minDate={new Date().toLocaleDateString()}
-          maxDate="2080-12-31"
+          style={{ backgroundColor: "#ffffff", height: isTablet && 800 }}
+          theme={{weekVerticalMargin: isTablet ? 50 : 5,  calendarBackground: "#ffffff", dayTextColor:"black", textDayFontWeight: 400, textDayFontSize: isTablet ? 24 : 18, textMonthFontSize: isTablet ? 30 : 18, textMonthFontWeight: 700, }}
+          minDate={new Date().toISOString().split('T')[0]}
+          maxDate={'2080-12-31'}
+          date={new Date().toLocaleDateString()}
           onDayPress={handleDayPress}
           monthFormat="yyyy MMM"
           renderArrow={(direction: Direction) => (
@@ -132,7 +135,7 @@ const ChildScreen = () => {
         date={selectedDate}
         allDone={() => alert("All tasks are done")}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -172,14 +175,13 @@ const styles = StyleSheet.create({
 
   },
   header: {
-    paddingVertical: 10,
-    marginBottom: 30,
+    paddingVertical: 20,
     paddingHorizontal: 10,
+    marginVertical: 30
   },
   greetings: {
     fontWeight: 700,
     fontSize: 16,
-    lineHeight: 24,
   },
   instructions: {
     fontSize: 16,
@@ -187,12 +189,10 @@ const styles = StyleSheet.create({
     color: "#2B2B2B",
   },
   calendarContainer: {
-    marginTop: -20,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
     borderRadius: 5,
     marginHorizontal: 10,
-    boxShadow:
-      "rgba(50, 50, 93, 0.25) 0px 50px 100px -10px, #4A8177 0px 30px 60px -30px",
+    boxShadow: "rgba(50, 50, 93, 0.25) 0px 50px 100px -10px, #4A8177 0px 30px 60px -30px",
   },
 });

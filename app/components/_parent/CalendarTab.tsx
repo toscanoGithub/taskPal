@@ -168,7 +168,7 @@ const CalendarTab = () => {
       {user?.members?.length ? (
         <View style={styles.calendarContainer}>
           <Calendar
-          style={{ backgroundColor: "#ffffff", height: isTablet && 800 }}
+            style={{ backgroundColor: "#ffffff", height: isTablet && 800 }}
             theme={{weekVerticalMargin: isTablet ? 50 : 5,  calendarBackground: "#ffffff", dayTextColor:"black", textDayFontWeight: 400, textDayFontSize: isTablet ? 24 : 18, textMonthFontSize: isTablet ? 30 : 18, textMonthFontWeight: 700, }}
             minDate={new Date().toISOString().split('T')[0]}
             maxDate={'2080-12-31'}
