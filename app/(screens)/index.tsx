@@ -8,6 +8,8 @@ import SigninForm from '../components/signin-form';
 import Gradient from '../components/Gradient';
 import { StatusBar } from 'expo-status-bar';
 import * as Device from 'expo-device';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { TouchableOpacity } from 'react-native';
 
 
 const closeIcon = (props: any): IconElement => (
@@ -33,7 +35,7 @@ const AuthScreen = () => {
       };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <StatusBar hidden={true} />
       <Gradient from={theme['gradient-from']} to={theme['gradient-to']} />
       <View style={styles.buttonsRow}>
@@ -92,15 +94,18 @@ const AuthScreen = () => {
 
             <View style={styles.modalView}>
             
+    <Gradient from={theme['gradient-from']} to={theme['gradient-to']}  />
 
-              <Button onPress={() => setModalIsVisible(!modalIsVisible)}  appearance="ghost"  style={styles.closeBtn}  accessoryLeft={closeIcon} />
-              <Text category='h4' style={styles.modalTitle}>{modalType}</Text>
+    <TouchableOpacity style={[styles.closeBtn, {width: isTablet ? 120 : 60, height: isTablet ? 70 : 40, opacity: 0.7}]} onPress={() => dismissModal()}>
+      <MaterialCommunityIcons name="close" size={isTablet ? 50 : 24} color={theme.secondary} />
+    </TouchableOpacity>
+    <Text category='h4' style={[styles.modalTitle, {fontSize: isTablet ? 60 : 30,  marginVertical: isTablet ? 40 : 10}]}>{modalType}</Text>
               
               {modalType === "SIGN UP" ? <SignupForm dismissModal={dismissModal} /> : <SigninForm dismissModal={dismissModal} />}
             </View>
           </View> 
         </Modal>  
-    </SafeAreaView>
+    </View>
   )
 }
 
@@ -164,9 +169,8 @@ const styles = StyleSheet.create({
       position:"absolute",
       bottom:0,
       left:0, right:0,
-      backgroundColor: "#F6F6F6",
-      borderTopLeftRadius: 45,
-      // padding: 35,
+      // borderTopLeftRadius: 45,
+      padding: 35,
       alignItems: 'center',
       paddingHorizontal: 10,
       shadowColor: '#000',
@@ -175,10 +179,11 @@ const styles = StyleSheet.create({
         height: 2,
       },
       shadowOpacity: 0.25,
-      shadowRadius: 4,
-      elevation: 5,
+      shadowRadius: 1,
+      elevation: 10,
       height:"80%",
       width:"100%",
+      
       
     },
     button: {
@@ -193,16 +198,23 @@ const styles = StyleSheet.create({
       textAlign: 'center',
     },
     modalTitle: {
-      marginTop: 30,
-      marginBottom:0,
       textAlign: 'center',
-      color: theme['gradient-to']
+      color: theme.secondary,
+      
     },
 
     closeBtn: {
       position: "absolute",
-      left: 0,
-      top:-15,
+    left: 0,
+    top: -5,
+    borderTopLeftRadius: 30,
+    borderWidth: 2,
+    borderColor: "#DDCA8740",
+    backgroundColor: "transparent",
+    justifyContent: "center",
+    alignItems: "center",
+    
+
 
     }
 })

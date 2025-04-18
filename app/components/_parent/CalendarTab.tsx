@@ -198,7 +198,7 @@ const CalendarTab = () => {
           <View style={[styles.modalView, { height: "85%" }]}>
             <Gradient from={theme['gradient-from']} to={theme['gradient-to']} />
             <Button style={styles.closeBtn} onPress={() => dismissModal()}>
-              <MaterialCommunityIcons name="close" size={32} color="red" />
+              <MaterialCommunityIcons name="close" size={isTablet ? 100 : 32} color="red" />
             </Button>
             {modalType === "ADD_MEMBER" ? (
                user && <AddFamilyMemberForm  dismiss={() => setModalIsVisible(!modalIsVisible)}  />

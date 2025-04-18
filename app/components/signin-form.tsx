@@ -16,9 +16,10 @@ import { router } from 'expo-router';
 import { useUserContext } from '@/contexts/UserContext';
 import { AuthUser, User } from '@/types/Entity';
 import { useRouter } from 'expo-router';
+import Gradient from './Gradient';
 
 
-interface signupProp {
+interface SigninProp {
   dismissModal: () => void;  // Defining the function prop type
 }
 
@@ -34,7 +35,7 @@ const validationSchema = Yup.object().shape({
   password: Yup.string().required('Password is required').min(6, 'Password is too short'),
 });
 
-const SigninForm: React.FC<signupProp> = ({ dismissModal }) => {
+const SigninForm: React.FC<SigninProp> = ({ dismissModal }) => {
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
   const {setUser, user} = useUserContext()
@@ -99,16 +100,8 @@ const SigninForm: React.FC<signupProp> = ({ dismissModal }) => {
 
   return (
     <>
-      <View style={{flexDirection:"row", width:"100%", justifyContent:"flex-start", alignItems:"center", columnGap: 10, marginTop: 30, marginBottom: 0}}>
-    <Switch
-      trackColor={{false: theme["gradient-to"], true: theme["gradient-to"]}}
-      thumbColor={isEnabled ? theme["secondary"] : theme["gradient-to"]}
-      ios_backgroundColor="secondary"
-      onValueChange={toggleSwitch}
-      value={isEnabled}
-    /> 
-    <Text category='h1'  style={{fontSize: isTablet ? 30 : 18,  color: `${isEnabled ? theme["gradient-to"] : "#ccc"}`}}>I'm a family member</Text>
-  </View>
+    {/* <Gradient from={theme['gradient-from']} to={theme['gradient-to']}  /> */}
+      
     <Formik 
         initialValues={{
           email: 'jdoe@task.pal',
@@ -122,11 +115,20 @@ const SigninForm: React.FC<signupProp> = ({ dismissModal }) => {
 
 {({ handleChange, handleBlur, handleSubmit, values, errors, touched, resetForm }) => 
 
-<View style={styles.inputsWrapper}>
-  
+<View style={[styles.inputsWrapper, {width: isTablet ? "80%" : "100%"}]}>
+<View style={{flexDirection:"row", width:"100%", justifyContent:"flex-start", alignItems:"center",  marginBottom: 15}}>
+    <Switch
+      trackColor={{false: theme["gradient-to"], true: theme["gradient-to"]}}
+      thumbColor={isEnabled ? theme["secondary"] : theme["gradient-to"]}
+      ios_backgroundColor="secondary"
+      onValueChange={toggleSwitch}
+      value={isEnabled}
+    /> 
+    <Text category='title'  style={{fontSize: isTablet ? 40 : 20, marginLeft: 10,  color: `${isEnabled ? theme.secondary : theme["gradient-to"]}`}}>I'm a family member</Text>
+  </View>
   {/* EMAIL */}
         <Input
-          textStyle={{ fontSize: isTablet ? 30 : 18 }}
+          textStyle={{ fontSize: isTablet ? 30 : 20, color: "white" }}
           style={styles.input}
           placeholder={isEnabled ? "Your parent's email" : "Your email"}
           value={values.email}
@@ -134,13 +136,13 @@ const SigninForm: React.FC<signupProp> = ({ dismissModal }) => {
           onBlur={handleBlur('email')}
           status={touched.email && errors.email ? 'danger' : 'basic'}
         />
-        {touched.email && errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+        {touched.email && errors.email && <Text style={[styles.errorText, {marginBottom: isTablet ? 15 : 0, fontSize: isTablet ? 30 : 18}]}>{errors.email}</Text>}
 
 
 {/* PASSWORD */}
         {
           !isEnabled && <><Input
-          textStyle={{ fontSize: isTablet ? 30 : 18 }}
+          textStyle={{ fontSize: isTablet ? 30 : 20, color: "white" }}
           style={styles.input}
           placeholder='Password'
           value={values.password}
@@ -174,7 +176,7 @@ const SigninForm: React.FC<signupProp> = ({ dismissModal }) => {
                         setLoginBtnPressed(false)
                         }, 450);
                         handleSubmit();
-                            }} style={[styles.loginBtn, {borderBottomWidth: loginBtnPressed ? 0 : 3}]} appearance='outline'  status='primary'>
+                            }} style={[styles.loginBtn, {borderBottomWidth: loginBtnPressed ? 0 : 3, marginTop: isTablet ? 70 : 60}]} appearance='outline'  status='primary'>
                               {evaProps => <Text  {...evaProps} style={{color:"#ffffff", fontSize: isTablet ? 30 : 18}}>Login</Text>}</Button>
 </View>
 
@@ -190,28 +192,27 @@ export default SigninForm
 const styles = StyleSheet.create({
   inputsWrapper: {
     flex: 1,
-    width:"100%",
     marginTop: 20,
+    
   },
 
   input: {
     width:"100%",
-        paddingVertical: 10,
-        backgroundColor: "#F2F2F2",
-        borderWidth: 1,
-        // borderColor: "#DDCA8750",
-        color: "black",
+    paddingVertical: 15,
+    backgroundColor: theme['btn-bg-color'],
+    borderWidth: 1,
+    borderColor: "#DDCA8750",
+    borderRadius: 15,
+    color: "white"
   },
 
   errorText: {
     color: 'red',
-    marginTop: -10,
-    marginBottom: 10,
+    marginTop: -15,
   },
 
 
   loginBtn: {
-      marginTop: 15,
       backgroundColor: theme["btn-bg-color"],
       borderColor: "transparent",
       borderRadius: 30,

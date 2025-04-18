@@ -94,13 +94,13 @@ console.error("Error adding document: ", e);
 
 {({ handleChange, handleBlur, handleSubmit, values, errors, touched, resetForm }) => 
 
-<View style={styles.inputsWrapper}>
+<View style={[styles.inputsWrapper, {width: isTablet ? "80%" : "100%"}]}>
 
 
   
   {/* Name */}
   <Input
-          textStyle={{ fontSize: isTablet ? 30 : 18 }}
+          textStyle={{ fontSize: isTablet ? 30 : 20, color: "white" }}
           style={styles.input}
           placeholder='Your name'
           value={values.name}
@@ -113,7 +113,7 @@ console.error("Error adding document: ", e);
 
   {/* EMAIL */}
         <Input
-          textStyle={{ fontSize: isTablet ? 30 : 18 }}
+          textStyle={{ fontSize: isTablet ? 30 : 20, color: "white" }}
           style={styles.input}
           placeholder='Email'
           value={values.email}
@@ -126,7 +126,7 @@ console.error("Error adding document: ", e);
 
 {/* PASSWORD */}
         <Input
-          textStyle={{ fontSize: isTablet ? 30 : 18 }}
+          textStyle={{ fontSize: isTablet ? 30 : 20, color: "white" }}
           style={styles.input}
           placeholder='Password'
           value={values.password}
@@ -139,7 +139,7 @@ console.error("Error adding document: ", e);
 
 {/* CONFIRM PASSWORD */}
         <Input
-          textStyle={{ fontSize: isTablet ? 30 : 18 }}
+          textStyle={{ fontSize: isTablet ? 30 : 20, color: "white" }}
           style={styles.input}
           placeholder='Confirm password'
           value={values.confirmPassword}
@@ -156,7 +156,7 @@ console.error("Error adding document: ", e);
                 setRegisterBtnPressed(false)
                 }, 450);
                 handleSubmit();
-                    }} style={[styles.registerBtn, {borderBottomWidth: registerBtnPressed ? 0 : 3}]} appearance='outline'  status='primary'>
+              }} style={[styles.registerBtn, {borderBottomWidth: registerBtnPressed ? 0 : 3, marginTop: isTablet ? 70 : 40}]} appearance='outline'  status='primary'>
                       {evaProps => <Text  {...evaProps} style={{color:"#ffffff", fontSize: isTablet ? 30 : 18}}>Register</Text>}</Button>
 </View>
 
@@ -171,23 +171,23 @@ export default SignupForm
 const styles = StyleSheet.create({
   inputsWrapper: {
     flex: 1,
-    width:"100%",
     marginTop: 20,
+    marginHorizontal: "auto",
   },
 
   input: {
     width:"100%",
-        paddingVertical: 10,
-        backgroundColor: "#F2F2F2",
-        borderWidth: 1,
-        borderColor: "#DDCA8750",
-        color: "white"
+    paddingVertical: 15,
+    backgroundColor: theme['btn-bg-color'],
+    borderWidth: 1,
+    borderColor: "#DDCA8750",
+    borderRadius: 15,
+    color: "white"
   },
 
   errorText: {
     color: 'red',
-    marginTop: -10,
-    marginBottom: 10,
+    marginTop: -15,
   },
 
   registerBtn: {
