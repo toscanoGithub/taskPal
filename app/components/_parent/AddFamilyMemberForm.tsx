@@ -99,7 +99,7 @@ const AddFamilyMemberForm: React.FC<AddFamilyMemberFormProps> = ({ dismiss }) =>
               style={styles.submitBtn}
               status="primary"
             >
-              {evaProps => <Text style={{ ...evaProps, color: "#EDB232", fontSize: isTablet ? 30 : 18 }}>
+              {evaProps => <Text style={{ ...evaProps, color: "#EDB232", fontSize: isTablet ? 34 : 18 }}>
                 Add new family member
               </Text>}
             </Button>
@@ -149,6 +149,7 @@ const styles = StyleSheet.create({
     borderColor: "transparent",
     borderRadius: 30,
     borderBottomColor: theme.secondary,
+    borderBottomWidth: 3,
     marginTop: 30
   },
 });

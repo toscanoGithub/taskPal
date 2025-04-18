@@ -205,14 +205,14 @@ const styles = StyleSheet.create({
 
     closeBtn: {
       position: "absolute",
-    left: 0,
-    top: -5,
-    borderTopLeftRadius: 30,
-    borderWidth: 2,
-    borderColor: "#DDCA8740",
-    backgroundColor: "transparent",
-    justifyContent: "center",
-    alignItems: "center",
+      left: 0,
+      top: -5,
+      borderTopLeftRadius: 30,
+      borderWidth: 2,
+      borderColor: "#DDCA8740",
+      backgroundColor: "transparent",
+      justifyContent: "center",
+      alignItems: "center",
     
 
 

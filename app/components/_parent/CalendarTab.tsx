@@ -197,9 +197,9 @@ const CalendarTab = () => {
         <View style={styles.centeredView}>
           <View style={[styles.modalView, { height: "85%" }]}>
             <Gradient from={theme['gradient-from']} to={theme['gradient-to']} />
-            <Button style={styles.closeBtn} onPress={() => dismissModal()}>
-              <MaterialCommunityIcons name="close" size={isTablet ? 100 : 32} color="red" />
-            </Button>
+            <TouchableOpacity style={[styles.closeBtn, {width: isTablet ? 120 : 60, height: isTablet ? 70 : 40, opacity: 0.7}]} onPress={() => dismissModal()}>
+                  <MaterialCommunityIcons name="close" size={isTablet ? 50 : 24} color={theme.secondary} />
+                </TouchableOpacity>
             {modalType === "ADD_MEMBER" ? (
                user && <AddFamilyMemberForm  dismiss={() => setModalIsVisible(!modalIsVisible)}  />
             ) : selectedFamilyMember && (
@@ -277,13 +277,13 @@ const styles = StyleSheet.create({
   closeBtn: {
     position: "absolute",
     left: 0,
-    top: 0,
+    top: -5,
     borderTopLeftRadius: 30,
-    borderBottomRightRadius: 5,
-    borderTopRightRadius: 0,
-    borderWidth: 1,
-    borderColor: "#DDCA8770",
+    borderWidth: 2,
+    borderColor: "#DDCA8740",
     backgroundColor: "transparent",
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   
