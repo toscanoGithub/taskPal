@@ -42,8 +42,8 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({date, dismiss, toFamilyMember}
   return (
     <View>
       {/* MODAL TITLE */}
-      <Text category='h4' style={styles.modalTitle}>Add tasks to {toFamilyMember}</Text>
-      <Text style={styles.selectedDate}>{date?.dateString}</Text>
+      <Text category='h6' style={[styles.modalTitle, {fontSize: isTablet ? 50 : 18, textTransform: "capitalize"}]}>Add tasks to {toFamilyMember}</Text>
+      <Text category='s1' style={[styles.selectedDate, {fontSize: isTablet ? 30 : 18}]}>{date?.dateString}</Text>
         {/* Form */}
         <Formik 
             initialValues={{
@@ -65,7 +65,7 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({date, dismiss, toFamilyMember}
                     <View style={{width:"100%", flexDirection: "row", justifyContent:"space-between", alignItems:"center"}}>
                       {/* DESCRIPTION */}
                     <Input
-                        textStyle={{ fontSize: isTablet ? 30 : 18 }}
+                        textStyle={{ fontSize: isTablet ? 30 : 18, color: "white" }}
                         style={styles.input}
                         placeholder='Task description'
                         value={ values.description}
@@ -79,8 +79,8 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({date, dismiss, toFamilyMember}
                       setTimeout(() => {
                         resetForm()
                       }, 0);
-                    }} style={{position:"absolute", right:0, top: 15}}>
-                    <EvilIcons style={{marginTop: 3, opacity: 0.7}} name="plus" size={40} color={theme.secondary} />
+                    }} style={{right: -10, top: isTablet ? 10 : 15, position: "absolute", zIndex: 1}}>
+                    <EvilIcons style={{opacity: 0.7}} name="plus" size={isTablet ? 80 : 50} color={theme.secondary} />
                     </TouchableOpacity>
                     </View>
                      {touched.description && errors.description && <Text style={styles.errorText}>{errors.description}</Text>}
@@ -101,41 +101,35 @@ const styles = StyleSheet.create({
     marginTop: 70,
     marginBottom:0,
     textAlign: 'center',
-    color: "#EDB232"
+    color: theme.secondary,
   },
     selectedDate: {
         textAlign:"center",
         marginVertical: 5,
-        color:"#DDCA87",
-        fontSize: 18,
-        fontWeight: 100,
+        color: theme.secondary,
+        fontWeight: 200,
     },
     inputsWrapper: {
         flex: 1,
         width:"100%",
         marginTop: 50,
+        alignItems:"center",
       },
     
       input: {
         width:"100%",
         paddingVertical: 15,
-        backgroundColor: "#3A7174",
+        backgroundColor: theme['btn-bg-color'],
         borderWidth: 1,
         borderColor: "#DDCA8750",
-        color: "white"
+        borderRadius: 15,
+        color: "white",
       },
     
       errorText: {
         color: 'red',
-        marginTop: -10,
-        marginBottom: 10,
+        marginTop: -15,
       },
     
-      submitBtn: {
-        marginTop: 15,
-        borderRadius: 50,
-        borderWidth: 1,
-        borderColor: "#DDCA8750",
-        position:"absolute", right:0, top: 15
-      },
+      
 })

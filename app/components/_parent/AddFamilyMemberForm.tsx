@@ -133,17 +133,17 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   input: {
-    width: "100%",
+    width:"100%",
     paddingVertical: 15,
-    backgroundColor: "#3A7174",
+    backgroundColor: theme['btn-bg-color'],
     borderWidth: 1,
     borderColor: "#DDCA8750",
+    borderRadius: 15,
     color: "white"
   },
   errorText: {
     color: 'red',
-    marginTop: -10,
-    marginBottom: 10,
+    marginTop: -15,
   },
   submitBtn: {
     marginTop: 15,
