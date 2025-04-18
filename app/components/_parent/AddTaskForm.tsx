@@ -43,7 +43,7 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({date, dismiss, toFamilyMember}
     <View>
       {/* MODAL TITLE */}
       <Text category='h6' style={[styles.modalTitle, {fontSize: isTablet ? 50 : 18, textTransform: "capitalize"}]}>Add tasks to {toFamilyMember}</Text>
-      <Text category='s1' style={[styles.selectedDate, {fontSize: isTablet ? 30 : 18}]}>{date?.dateString}</Text>
+      <Text category='s1' style={[styles.selectedDate, {fontSize: isTablet ? 40 : 18}]}>{date?.dateString}</Text>
         {/* Form */}
         <Formik 
             initialValues={{
