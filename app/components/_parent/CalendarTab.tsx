@@ -1,11 +1,10 @@
-import { Animated, Modal, SafeAreaView, StyleSheet, TouchableOpacity, View, Image } from 'react-native';
+import { Animated, Modal, SafeAreaView, StyleSheet, TouchableOpacity, View, Image, Dimensions } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { Button, IndexPath, Text } from '@ui-kitten/components';
 import { Calendar, DateData } from 'react-native-calendars';
 import theme from "../../theme.json";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AddTaskForm from './AddTaskForm';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useTaskContext } from '@/contexts/TaskContext';
 import { Direction, MarkedDates } from 'react-native-calendars/src/types';
 import Gradient from '../Gradient';
@@ -35,6 +34,7 @@ const CalendarTab = () => {
   const [isDialogVisible, setIsDialogVisible] = useState<boolean>(false);
   const isTablet = Device.deviceType === Device.DeviceType.TABLET;
 
+  const {height} = Dimensions.get('screen');
   
 
 
@@ -86,11 +86,24 @@ const CalendarTab = () => {
         // Type assertion to specify taskItems as an array of objects with a `status` property
         const allCompleted = (taskItems as unknown as { status: string }[]).every((item) => item.status === 'Completed');
         newDaysWithTasks[td.dateString] = {
+          customStyles: {
+            container: {
+              borderRadius: 999, // makes it a full circle
+              width: isTablet ? 50 : 25,         // increase width
+              height: isTablet ? 50 : 25,        // increase height
+              alignItems: 'center',
+              justifyContent: 'center',
+            },
+            text: {
+              color: 'white',
+              fontWeight: 'bold',
+            },
+          },
           selected: true,
           marked: true,
-          selectedTextColor: "#14282F",
-          dotColor: "#ff0000",
-          selectedColor: allCompleted ? "green" : "#4A817730", // green for completed, transparent for incomplete
+          dotColor: !allCompleted ? theme['gradient-to'] : "transparent",
+          // selectedTextColor: "#14282F",
+          selectedColor: allCompleted ? theme['gradient-to'] : theme.secondary, // green for completed, transparent for incomplete
         };
 
 
@@ -168,8 +181,11 @@ const CalendarTab = () => {
       {user?.members?.length ? (
         <View style={styles.calendarContainer}>
           <Calendar
-            style={{ backgroundColor: "#ffffff", height: isTablet && 800 }}
-            theme={{weekVerticalMargin: isTablet ? 50 : 5,  calendarBackground: "#ffffff", dayTextColor:"black", textDayFontWeight: 400, textDayFontSize: isTablet ? 24 : 18, textMonthFontSize: isTablet ? 30 : 18, textMonthFontWeight: 700, }}
+          markingType={'custom'}
+            enableSwipeMonths={true}
+            hideExtraDays={true}
+            style={{ backgroundColor: "#ffffff", height: isTablet ? height * 0.5 : height * 0.5 }}
+            theme={{weekVerticalMargin: isTablet ? 40 : 5,  calendarBackground: "#ffffff", dayTextColor:"black", textDayFontWeight: 400, textDayFontSize: isTablet ? 25 : 16, textMonthFontSize: isTablet ? 30 : 18, textMonthFontWeight: 700 }}
             minDate={new Date().toISOString().split('T')[0]}
             maxDate={'2080-12-31'}
             date={new Date().toLocaleDateString()}
@@ -244,6 +260,7 @@ const styles = StyleSheet.create({
     color: "#2B2B2B",
   },
   calendarContainer: {
+    marginTop: 20,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
