@@ -15,6 +15,7 @@ import db from '@/firebase/firebase-config';
 import theme from "../theme.json"
 import { useRouter } from 'expo-router';
 import * as Device from 'expo-device';
+import CalendarLegend from '../components/calendar-legend';
 
 interface TaskItem {
   description: string;
@@ -137,8 +138,10 @@ const ChildScreen = () => {
           )}
           markedDates={daysWithTasks}
         />
+
       </View>
 
+      <CalendarLegend />
       
       <TaskView
         dismiss={() => setShowTask(false)}
@@ -189,7 +192,7 @@ const styles = StyleSheet.create({
   header: {
     paddingVertical: 20,
     paddingHorizontal: 10,
-    marginVertical: 30
+    marginVertical: 10
   },
   greetings: {
     fontWeight: 700,
@@ -201,11 +204,11 @@ const styles = StyleSheet.create({
     color: "#2B2B2B",
   },
   calendarContainer: {
-    marginTop: 10,
+    marginTop: 5,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
     marginHorizontal: 10,
-    boxShadow: "rgba(50, 50, 93, 0.25) 0px 50px 100px -10px, #4A8177 0px 30px 60px -30px",
+    boxShadow: "rgba(50, 50, 93, 0.25) 0px 50px 100px -10px, #4A8177 0px 30px 60px -50px",
   },
 });

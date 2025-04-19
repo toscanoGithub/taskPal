@@ -15,6 +15,7 @@ import AddFamilyMemberForm from './AddFamilyMemberForm';
 import { FamilyMember } from '@/types/Entity';
 import Popover from 'react-native-popover-view';
 import * as Device from 'expo-device';
+import CalendarLegend from '../calendar-legend';
 
 
 
@@ -199,14 +200,17 @@ const CalendarTab = () => {
             )}
             markedDates={daysWithTasks}
           />
+ 
         </View>
+       
+
       ) : (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingHorizontal: 50, marginTop: -50 }}>
           <Text style={{ textAlign: "center", color: theme['gradient-from'] }} category="h3">Please, Add Family Members</Text>
         </View>
       )}
 
-      
+{tasks.length > 0 && <CalendarLegend />}
 
       {/* Modal */}
       <Modal animationType="slide" transparent={true} visible={modalIsVisible}>
@@ -247,7 +251,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
   },
   header: {
-    paddingVertical: 10,
+    paddingVertical: 5,
     paddingHorizontal: 10,
   },
   greetings: {
@@ -255,12 +259,11 @@ const styles = StyleSheet.create({
     
   },
   instructions: {
-    
     fontWeight: 300,
     color: "#2B2B2B",
   },
   calendarContainer: {
-    marginTop: 10,
+    marginTop: 5,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
