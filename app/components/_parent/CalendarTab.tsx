@@ -89,8 +89,8 @@ const CalendarTab = () => {
           customStyles: {
             container: {
               borderRadius: 999, // makes it a full circle
-              width: isTablet ? 50 : 25,         // increase width
-              height: isTablet ? 50 : 25,        // increase height
+              width: isTablet ? 50 : 30,         // increase width
+              height: isTablet ? 50 : 30,        // increase height
               alignItems: 'center',
               justifyContent: 'center',
             },
@@ -181,10 +181,10 @@ const CalendarTab = () => {
       {user?.members?.length ? (
         <View style={styles.calendarContainer}>
           <Calendar
-          markingType={'custom'}
+            markingType={'custom'}
             enableSwipeMonths={true}
             hideExtraDays={true}
-            style={{ backgroundColor: "#ffffff", height: isTablet ? height * 0.5 : height * 0.5 }}
+            style={{  height: isTablet && height * 0.5  }}
             theme={{weekVerticalMargin: isTablet ? 40 : 5,  calendarBackground: "#ffffff", dayTextColor:"black", textDayFontWeight: 400, textDayFontSize: isTablet ? 25 : 16, textMonthFontSize: isTablet ? 30 : 18, textMonthFontWeight: 700 }}
             minDate={new Date().toISOString().split('T')[0]}
             maxDate={'2080-12-31'}
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     color: "#2B2B2B",
   },
   calendarContainer: {
-    marginTop: 20,
+    marginTop: 10,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
