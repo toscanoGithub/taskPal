@@ -1,4 +1,4 @@
-import { Platform, SafeAreaView, StyleSheet, View } from 'react-native';
+import { Dimensions, Platform, SafeAreaView, StyleSheet, View } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { useUserContext } from '@/contexts/UserContext';
 import { Button, Text } from '@ui-kitten/components';
@@ -34,6 +34,7 @@ const ChildScreen = () => {
   const [showTask, setShowTask] = useState(false);
   const router = useRouter()
   const isTablet = Device.deviceType === Device.DeviceType.TABLET;
+  const {height} = Dimensions.get('screen');
 
 
 
@@ -54,8 +55,8 @@ const ChildScreen = () => {
         customStyles: {
           container: {
             borderRadius: 999, // makes it a full circle
-            width: isTablet ? 50 : 25,         // increase width
-            height: isTablet ? 50 : 25,        // increase height
+            width: isTablet ? 50 : 30,         // increase width
+            height: isTablet ? 50 : 30,        // increase height
             alignItems: 'center',
             justifyContent: 'center',
           },
@@ -118,13 +119,17 @@ const ChildScreen = () => {
 
       <View style={styles.calendarContainer}>
         <Calendar
-          style={{ backgroundColor: "#ffffff", height: isTablet && 800 }}
-          theme={{weekVerticalMargin: isTablet ? 50 : 5,  calendarBackground: "#ffffff", dayTextColor:"black", textDayFontWeight: 400, textDayFontSize: isTablet ? 24 : 18, textMonthFontSize: isTablet ? 30 : 18, textMonthFontWeight: 700, }}
+          markingType={'custom'}
+          enableSwipeMonths={true}
+          hideExtraDays={true}
+          style={{  height: isTablet && height * 0.5  }}
+          theme={{weekVerticalMargin: isTablet ? 40 : 5,  calendarBackground: "#ffffff", dayTextColor:"black", textDayFontWeight: 400, textDayFontSize: isTablet ? 25 : 16, textMonthFontSize: isTablet ? 30 : 18, textMonthFontWeight: 700 }}
           minDate={new Date().toISOString().split('T')[0]}
           maxDate={'2080-12-31'}
           date={new Date().toLocaleDateString()}
+          
           onDayPress={handleDayPress}
-          monthFormat="yyyy MMM"
+          monthFormat={'yyyy MMM'}
           renderArrow={(direction: Direction) => (
             <View style={{ padding: 10 }}>
               {direction === 'left' ? <Text>◀</Text> : <Text>▶</Text>}
@@ -196,6 +201,7 @@ const styles = StyleSheet.create({
     color: "#2B2B2B",
   },
   calendarContainer: {
+    marginTop: 10,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
