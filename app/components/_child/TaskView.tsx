@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { View, TouchableOpacity, Dimensions, StyleSheet, SafeAreaView } from 'react-native';
 import Animated, { Easing, withSpring, useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reanimated';
 import { Text } from '@ui-kitten/components';
+import LottieView from 'lottie-react-native';
 import theme from "../../theme.json";
 import { useUserContext } from '@/contexts/UserContext';
 import { useTaskContext } from '@/contexts/TaskContext';
-import AntDesign from '@expo/vector-icons/AntDesign';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { collection, doc, getDocs, query, where } from 'firebase/firestore';
@@ -14,7 +14,8 @@ import { DateData } from 'react-native-calendars';
 import { Task } from '@/types/Entity';
 import * as Device from 'expo-device';
 
-const { height, width } = Dimensions.get('window');
+
+const { height, width } = Dimensions.get('screen');
 
 interface TaskViewProps {
   isVisible: boolean;
@@ -35,9 +36,9 @@ const TaskView: React.FC<TaskViewProps> = ({ isVisible, tasksCurrentdDay, date, 
   const { user } = useUserContext();
   const { tasks } = useTaskContext();
   const { updateTask } = useTaskContext();
-  const isTablet = Device.deviceType === Device.DeviceType.TABLET;
 
-  const slidePosition = useSharedValue(-height); // Start off-screen
+  const slidePosition = useSharedValue(-height);
+  const isTablet = Device.deviceType === Device.DeviceType.TABLET;
 
   const slideIn = () => {
     slidePosition.value = withSpring(0, { damping: 20, stiffness: 100 });
@@ -94,6 +95,7 @@ const TaskView: React.FC<TaskViewProps> = ({ isVisible, tasksCurrentdDay, date, 
 
   const screenHeight = Dimensions.get("screen").height;
 
+
   // Format the date to a readable format
   // Example: "April 23, 2025"
   const formattedDate = new Intl.DateTimeFormat('en-US', {
@@ -101,11 +103,13 @@ const TaskView: React.FC<TaskViewProps> = ({ isVisible, tasksCurrentdDay, date, 
     month: 'long',
     day: 'numeric',
   }).format(date ? new Date(date.year, date.month - 1, date.day) : new Date());
+
+
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {/* Sliding view */}
       <Animated.View style={[styles.slidingView, animatedStyle]}>
-        <TouchableOpacity onPress={() => slideOut()} style={{ marginTop: 0.15 * screenHeight, marginLeft: 0, zIndex: 1000, width: 70, height: 70, justifyContent: "center", alignItems: "center" }}>
+      <TouchableOpacity onPress={() => slideOut()} style={{ marginTop: 0.15 * screenHeight, marginLeft: 0, zIndex: 1000, width: 70, height: 70, justifyContent: "center", alignItems: "center" }}>
           <Ionicons name="arrow-back-circle-outline" size={isTablet ? 70 : 50} color={theme['btn-bg-color']} />
         </TouchableOpacity>
         <Text category="h1" style={{ color: theme['gradient-to'], marginTop: 30, fontSize: isTablet ? 44 : 22, paddingLeft: 10, textAlign: "center" }}>
@@ -121,17 +125,25 @@ const TaskView: React.FC<TaskViewProps> = ({ isVisible, tasksCurrentdDay, date, 
 
               {/* Show "Done" button if task is not completed */}
               {task.status !== "Completed" && !confettiStates[task.id] && (
-                <TouchableOpacity onLayout={handleLayout} onPress={() => handlePressDoneBtn(task.id)} style={[styles.doneBtn, {width: isTablet ? 150 : 100, height: isTablet ? 60 : 40, justifyContent: "center", alignItems: "center"}]} >
-                  <Text style={{ textAlign: "center", color: theme.secondary, fontSize: isTablet ? 30 : 18 }}>Done</Text>
+                <TouchableOpacity onLayout={handleLayout} onPress={() => handlePressDoneBtn(task.id)} style={[styles.doneBtn]}>
+                  <Text style={{ textAlign: "center" }}>Done</Text>
                 </TouchableOpacity>
               )}
 
-             
+              {/* Display the confetti animation for the task if it's completed */}
+              {(task.status === "Completed" || confettiStates[task.id]) && (
+                <LottieView
+                  source={require('../../../assets/animations/done.json')} // Path to your confetti animation JSON
+                  autoPlay
+                  loop={false}
+                  style={[styles.confetti, { zIndex: 1000, width: isTablet ? 150 : 100, height: isTablet ? 150 : 100, right: -isTablet ? -75 : -50, bottom: -isTablet ? -75 : -50 }]}
+                />
+              )}
             </View>
           ))}
         </View>
       </Animated.View>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -141,6 +153,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  
   slidingView: {
     position: 'absolute',
     bottom: 0,
@@ -150,20 +163,22 @@ const styles = StyleSheet.create({
     height: height,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    
+    shadowColor: 'rgba(0, 0, 0, 0.3)',
+    shadowOffset: { width: 0, height: -5 },
+    shadowRadius: 5,
+    shadowOpacity: 0.3,
   },
   content: {
     flex: 1,
     alignItems: 'center',
     position: "relative",
-    marginVertical: 30
   },
   taskCard: {
     marginVertical: 10,
     position: "relative",
     width: "90%",
+    paddingLeft: 10,
     backgroundColor: theme['gradient-to'],
-    paddingTop: 10,
     borderTopRightRadius: 30,
     borderTopStartRadius: 20,
     borderBottomRightRadius: 5,
@@ -172,7 +187,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "flex-start"
   },
-  description: {
+    description: {
+    fontSize: 16,
+    fontWeight: 700,
     paddingHorizontal: 10,
     color: theme.secondary,
   },
@@ -181,15 +198,18 @@ const styles = StyleSheet.create({
     zIndex: 100,
     marginLeft: "auto",
     borderRadius: 30,
-    backgroundColor: theme['gradient-to'],
+    backgroundColor: theme.secondary,
+    padding: 5,
     bottom: -10,
     right: -10,
+    width: 80,
   },
   confetti: {
     position: 'absolute',
-    width: '100%',
-    height: '100%',
+    width: 50,
+    height: 50,
   },
 });
 
 export default TaskView;
+

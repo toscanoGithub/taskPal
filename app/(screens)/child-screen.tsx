@@ -50,18 +50,25 @@ const ChildScreen = () => {
       const allCompleted = taskItems.every((item: TaskItem) => item.status === "Completed");
 
       daysWithTasksObj[task.date.dateString] = {
-        selected: true,
-        marked: true,
-        selectedTextColor: "#14282F",
-        dotColor: "#ff0000",
-        selectedColor: allCompleted ? "green" : "#4A817730",
+        
         customStyles: {
           container: {
-            borderColor: "red",
-            borderWidth: 4,
-            borderStyle: "solid"
-          }
-        }
+            borderRadius: 999, // makes it a full circle
+            width: isTablet ? 50 : 25,         // increase width
+            height: isTablet ? 50 : 25,        // increase height
+            alignItems: 'center',
+            justifyContent: 'center',
+          },
+          text: {
+            color: 'white',
+            fontWeight: 'bold',
+          },
+        },
+        selected: true,
+        marked: true,
+        dotColor: !allCompleted ? theme['gradient-to'] : "transparent",
+        // selectedTextColor: "#14282F",
+        selectedColor: allCompleted ? theme['gradient-to'] : theme.secondary,
       };
 
       if (allCompleted) {
