@@ -111,7 +111,7 @@ console.error("Error adding document: ", e);
         {touched.name && errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
 
 
-  {/* EMAIL */}
+  {/* EMAIL Keyboardtype */}
         <Input
           textStyle={{ fontSize: isTablet ? 30 : 20, color: "white" }}
           style={styles.input}
@@ -120,6 +120,7 @@ console.error("Error adding document: ", e);
           onChangeText={handleChange('email')}
           onBlur={handleBlur('email')}
           status={touched.email && errors.email ? 'danger' : 'basic'}
+          keyboardType="email-address"
         />
         {touched.email && errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
