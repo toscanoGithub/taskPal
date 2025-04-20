@@ -132,6 +132,7 @@ const SigninForm: React.FC<SigninProp> = ({ dismissModal }) => {
             onBlur={handleBlur('email')}
             status={touched.email && errors.email ? 'danger' : 'basic'}
             autoCapitalize="none"
+            keyboardType="email-address"
           />
           {touched.email && errors.email && (
             <Text style={[styles.errorText, { fontSize: isTablet ? 30 : 18 }]}>
