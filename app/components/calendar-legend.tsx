@@ -11,12 +11,12 @@ const CalendarLegend = () => {
     <View style={styles.container}>
       <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
         <View style={[styles.taskStatus, {backgroundColor: theme.secondary}]}/>
-        <Text style={[styles.text, {fontSize: isTablet ? 24 : 16}]} category='title'>Waiting tasks</Text>
+        <Text style={[styles.text, {fontSize: isTablet ? 24 : 14}]} category='s2'>Waiting tasks</Text>
       </View>
 
       <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
         <View style={[styles.taskStatus, {backgroundColor: theme['gradient-to']}]}/>
-        <Text style={[styles.text, {fontSize: isTablet ? 24 : 16}]} category='title'>Completed tasks</Text>
+        <Text style={[styles.text, {fontSize: isTablet ? 24 : 14}]} category='s2'>Completed tasks</Text>
       </View>
     </View>
   )
