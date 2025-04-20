@@ -121,6 +121,10 @@ console.error("Error adding document: ", e);
           onBlur={handleBlur('email')}
           status={touched.email && errors.email ? 'danger' : 'basic'}
           keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
+          textContentType="emailAddress"
+          
         />
         {touched.email && errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
