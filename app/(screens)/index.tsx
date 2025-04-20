@@ -3,8 +3,8 @@ import React, { useState } from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
 import theme from "../theme.json";
 import { Button, Icon, IconElement, Text } from '@ui-kitten/components';
-import SignupForm from '../components/signup-form';
-import SigninForm from '../components/signin-form';
+import SignupForm from '../components/auth/signup-form';
+import SigninForm from '../components/auth/signin-form';
 import Gradient from '../components/Gradient';
 import { StatusBar } from 'expo-status-bar';
 import * as Device from 'expo-device';
@@ -23,12 +23,12 @@ const closeIcon = (props: any): IconElement => (
 
 
 const AuthScreen = () => {
-  const {height} = Dimensions.get('screen')
+    const {height} = Dimensions.get('screen')
     const [modalIsVisible, setModalIsVisible] = useState(false)
     const [modalType, setModalType] = useState("SIGN IN")
     const [signinPressed, setSigninPressed] = useState(false)
     const [signupPressed, setSignupPressed] = useState(false)
-  const isTablet = Device.deviceType === Device.DeviceType.TABLET;
+    const isTablet = Device.deviceType === Device.DeviceType.TABLET;
 
     const dismissModal = () => {
         setModalIsVisible(!modalIsVisible)

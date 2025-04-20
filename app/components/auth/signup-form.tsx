@@ -3,16 +3,16 @@ import React, { useState } from 'react'
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { Input, Button, Toggle } from '@ui-kitten/components';
-import theme from "../theme.json"
+import theme from "../../theme.json"
 import * as Device from 'expo-device';
 
 
 // Firebase
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, Auth } from "firebase/auth";
-import "../../firebase/firebase-config";
+import "../../../firebase/firebase-config";
 
 import { collection, addDoc, query, where, getDocs, doc } from "firebase/firestore"; 
-import db from '../../firebase/firebase-config';
+import db from '../../../firebase/firebase-config';
 import { router } from 'expo-router';
 import { useUserContext } from '@/contexts/UserContext';
 interface signupProp {
