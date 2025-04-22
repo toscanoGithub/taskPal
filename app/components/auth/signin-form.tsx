@@ -174,6 +174,7 @@ const SigninForm: React.FC<SigninProp> = ({ dismissModal }) => {
           {!isEnabled && (
             <>
               <Input
+                autoCorrect={false}
                 textStyle={{ fontSize: isTablet ? 30 : 20, color: 'white' }}
                 style={styles.input}
                 placeholder="Password"
@@ -193,6 +194,7 @@ const SigninForm: React.FC<SigninProp> = ({ dismissModal }) => {
           {isEnabled && (
             <>
               <Input
+                autoCorrect={false}
                 textStyle={{ fontSize: isTablet ? 30 : 20, color: 'white' }}
                 style={styles.input}
                 placeholder="Your name"

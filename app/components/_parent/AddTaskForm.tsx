@@ -65,6 +65,7 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({date, dismiss, toFamilyMember}
                     <View style={{width:"100%", flexDirection: "row", justifyContent:"space-between", alignItems:"center"}}>
                       {/* DESCRIPTION */}
                     <Input
+                        autoCorrect={false}
                         textStyle={{ fontSize: isTablet ? 30 : 18, color: "white" }}
                         style={styles.input}
                         placeholder='Task description'

@@ -112,6 +112,7 @@ console.error("Error adding document: ", e);
   
   {/* Name */}
   <Input
+          autoCorrect={false}
           textStyle={{ fontSize: isTablet ? 30 : 20, color: "white" }}
           style={styles.input}
           placeholder='Your name'
@@ -143,6 +144,7 @@ console.error("Error adding document: ", e);
 
 {/* PASSWORD */}
         <Input
+          autoCorrect={false}
           textStyle={{ fontSize: isTablet ? 30 : 20, color: "white" }}
           style={styles.input}
           placeholder='Password'
@@ -156,6 +158,7 @@ console.error("Error adding document: ", e);
 
 {/* CONFIRM PASSWORD */}
         <Input
+          autoCorrect={false}
           textStyle={{ fontSize: isTablet ? 30 : 20, color: "white" }}
           style={styles.input}
           placeholder='Confirm password'

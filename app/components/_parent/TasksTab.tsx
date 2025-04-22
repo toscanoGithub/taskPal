@@ -1,5 +1,5 @@
 import { FlatList, StyleSheet, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Text, Layout } from '@ui-kitten/components'
 import theme from '../../theme.json'
 import InputWithAutocomplete from './InputWithAutocomplete'
@@ -9,32 +9,43 @@ import { useTaskContext } from '@/contexts/TaskContext'
 import Gradient from '../Gradient'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import * as Device from 'expo-device';
+import { Task } from '@/types/Entity'
 
 const TasksTab = () => {
   const [term, setTerm] = useState<string>('')
   const { user } = useUserContext()
-  const { tasks } = useTaskContext()
+  const { tasks } = useTaskContext() as { tasks: Task[] }
   const isTablet = Device.deviceType === Device.DeviceType.TABLET;
 
-  const filteredTasks = term
+  let filteredTasks = (term !== "")
     ? tasks.filter(task =>
         task.toFamilyMember.toLowerCase().includes(term.toLowerCase())
       )
     : tasks
 
+
+    if(term === "") {
+        filteredTasks = tasks
+    }
+    
+    
+    
   return (
     <View style={styles.container}>
       <InputWithAutocomplete
-        getMemberNameValue={(memberName: string) => setTerm(memberName)}
+        getMemberNameValue={(memberName: string) => {
+          setTerm(memberName)
+
+        }}
         placeholder="Search a family member name"
       />
 
-      {filteredTasks.length > 0 ? (
+      {filteredTasks && filteredTasks.length > 0 ? (
         <FlatList
           data={filteredTasks}
           keyExtractor={(_, index) => index.toString()}
           renderItem={({ item }) => (
-            <Layout style={[styles.tasksCard, {minWidth: isTablet ? "80%" : "100%", paddingHorizontal: isTablet ? 15 : 8, paddingBottom: isTablet ? 40 : 15}]}>
+            <Layout style={[styles.tasksCard, {minWidth: isTablet ? "80%" : "100%", paddingHorizontal: isTablet ? 15 : 8, paddingBottom: isTablet ? 40 : 15,}]}>
               <Gradient from={theme['gradient-from']} to={theme['gradient-to']} />
               <Text category='h6' style={{ color: theme.secondary, fontSize: isTablet ? 30 : 18 }}>{item.toFamilyMember}</Text>
               <Text category='s2' style={{ color: theme.tertiary, fontWeight: '300', fontSize: isTablet ? 30 : 15 }}>{item.date.dateString}</Text>
@@ -52,7 +63,7 @@ const TasksTab = () => {
             </Layout>
           )}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{flex: 1, paddingBottom: 120, }}
+          contentContainerStyle={{paddingBottom: 120, }}
         />
       ) : (
         <Layout style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -74,7 +85,6 @@ const styles = StyleSheet.create({
 
   tasksCard: {
     padding: 10, 
-    borderRadius: 15, 
     marginVertical: 5,
     
 
