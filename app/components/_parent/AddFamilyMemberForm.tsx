@@ -3,13 +3,13 @@ import React, { useEffect, useState } from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { Button, Input, Text } from '@ui-kitten/components';
-import { FamilyMember } from '@/types/Entity';
+import { useTaskContext } from '@/contexts/TaskContext';
+import { FamilyMember, Task } from '@/types/Entity';
 import { useUserContext } from '@/contexts/UserContext';
-import theme from "../../theme.json"
-import * as Device from 'expo-device';
 
 interface AddFamilyMemberFormProps {
   dismiss: () => void;
+  
 }
 
 interface FormValues {
@@ -22,9 +22,10 @@ const validationSchema = Yup.object().shape({
   passcode: Yup.string().required("Passcode is required"),
 });
 
-const AddFamilyMemberForm: React.FC<AddFamilyMemberFormProps> = ({ dismiss }) => {
-  const { user, updateUser } = useUserContext();
-  const isTablet = Device.deviceType === Device.DeviceType.TABLET;
+const AddFamilyMemberForm: React.FC<AddFamilyMemberFormProps> = ({ dismiss}) => {
+  const { tasks, addTaskToContext } = useTaskContext();
+  const { updateUser, user } = useUserContext();
+  const [currentDayTask, setCurrentDayTask] = useState<Task>();
 
   useEffect(() => {
     // Any side effects to manage
@@ -33,8 +34,8 @@ const AddFamilyMemberForm: React.FC<AddFamilyMemberFormProps> = ({ dismiss }) =>
   return (
     <View>
       {/* MODAL TITLE */}
-      <Text category="h4" style={[styles.modalTitle, { fontSize: isTablet ? 50 : 20 }]}>
-        Add Family Member
+      <Text category="h4" style={styles.modalTitle}>
+        Family Member
       </Text>
 
       {/* Form */}
@@ -47,20 +48,16 @@ const AddFamilyMemberForm: React.FC<AddFamilyMemberFormProps> = ({ dismiss }) =>
         onSubmit={values => {
           const { name, passcode } = values;
 
-         
+          // Ensure that parentPushToken is a valid string (defaults to empty string if undefined)
+          const parentPushToken = user?.parentPushToken || ''; // If pushToken is undefined, use ''
 
           // Ensure email is a valid string (defaults to empty string if undefined)
           const email = user?.email || '';
 
-          // Build the new member object
-          const newMember: FamilyMember = {
-            email,
-            name,
-            passcode,
-          };
+          
 
           // Call updateUser to add the new member
-          updateUser({name, passcode});
+          updateUser({name, passcode, parentPushToken});
           dismiss();
         }}
       >
@@ -68,7 +65,6 @@ const AddFamilyMemberForm: React.FC<AddFamilyMemberFormProps> = ({ dismiss }) =>
           <View style={styles.inputsWrapper}>
             {/* FULL NAME */}
             <Input
-              textStyle={{ fontSize: isTablet ? 30 : 20, color: "white" }}
               style={styles.input}
               placeholder="Enter name"
               value={values.name}
@@ -76,19 +72,18 @@ const AddFamilyMemberForm: React.FC<AddFamilyMemberFormProps> = ({ dismiss }) =>
               onBlur={handleBlur('name')}
               status={touched.name && errors.name ? 'danger' : 'basic'}
             />
-        {touched.name && errors.name && <Text style={[styles.errorText, {marginBottom: isTablet ? 15 : 0, fontSize: isTablet ? 30 : 18}]}>{errors.name}</Text>}
+            {touched.name && errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
 
             {/* PASSCODE */}
             <Input
-              textStyle={{ fontSize: isTablet ? 30 : 20, color: "white" }}
               style={styles.input}
-              placeholder="Enter a Passcode | Keep it simple..."
+              placeholder="Enter a Passcode"
               value={values.passcode}
               onChangeText={handleChange('passcode')}
               onBlur={handleBlur('passcode')}
               status={touched.passcode && errors.passcode ? 'danger' : 'basic'}
             />
-        {touched.passcode && errors.passcode && <Text style={[styles.errorText, {marginBottom: isTablet ? 15 : 0, fontSize: isTablet ? 30 : 18}]}>{errors.passcode}</Text>}
+            {touched.passcode && errors.passcode && <Text style={styles.errorText}>{errors.passcode}</Text>}
 
             {/* Submit Button */}
             <Button
@@ -99,7 +94,7 @@ const AddFamilyMemberForm: React.FC<AddFamilyMemberFormProps> = ({ dismiss }) =>
               style={styles.submitBtn}
               status="primary"
             >
-              {evaProps => <Text style={{ ...evaProps, color: "#EDB232", fontSize: isTablet ? 34 : 18 }}>
+              {evaProps => <Text style={{ ...evaProps, color: "#EDB232", fontSize: 20 }}>
                 Add new family member
               </Text>}
             </Button>
@@ -114,11 +109,10 @@ export default AddFamilyMemberForm;
 
 const styles = StyleSheet.create({
   modalTitle: {
-    marginTop: 70,
-    marginBottom: 20,
+    marginTop: 30,
+    marginBottom: 0,
     textAlign: 'center',
-    color: theme.secondary,
-    
+    color: "#EDB232"
   },
   selectedDate: {
     textAlign: "center",
@@ -130,26 +124,25 @@ const styles = StyleSheet.create({
   inputsWrapper: {
     flex: 1,
     width: "100%",
-    marginTop: 20,
+    marginTop: 30,
   },
   input: {
-    width:"100%",
+    width: "100%",
     paddingVertical: 15,
-    backgroundColor: theme['btn-bg-color'],
+    backgroundColor: "#3A7174",
     borderWidth: 1,
     borderColor: "#DDCA8750",
-    borderRadius: 15,
+    color: "white"
   },
   errorText: {
     color: 'red',
-    marginTop: -15,
+    marginTop: -10,
+    marginBottom: 10,
   },
   submitBtn: {
-    backgroundColor: theme["btn-bg-color"],
-    borderColor: "transparent",
-    borderRadius: 30,
-    borderBottomColor: theme.secondary,
-    borderBottomWidth: 3,
-    marginTop: 30
+    marginTop: 15,
+    borderRadius: 50,
+    borderWidth: 1,
+    borderColor: "#DDCA8750"
   },
 });

@@ -1,5 +1,5 @@
 import { Platform, StyleSheet, Switch, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { Input, Button, Text } from '@ui-kitten/components';
@@ -15,6 +15,7 @@ import db from '../../../firebase/firebase-config';
 import { useUserContext } from '@/contexts/UserContext';
 import { User } from '@/types/Entity';
 import { useRouter } from 'expo-router';
+import BoxMessage  from '../BoxMessage'; // Update the path based on the correct location of BoxMessage
 
 interface SigninProp {
   dismissModal: () => void;
@@ -44,6 +45,8 @@ const SigninForm: React.FC<SigninProp> = ({ dismissModal }) => {
   const router = useRouter();
   const [loginBtnPressed, setLoginBtnPressed] = useState(false);
   const isTablet = Device.deviceType === Device.DeviceType.TABLET;
+  const [message, setMessage] = useState("")
+  const [showBoxMessage, setShowBoxMessage] = useState(false)
 
   const signin = async (values: FormValues) => {
     const { email, password, name } = values;
@@ -51,10 +54,15 @@ const SigninForm: React.FC<SigninProp> = ({ dismissModal }) => {
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
-      alert('No email found in our database');
+      //alert('No email found in our database');
+      setMessage('No email found in our database');
+      setShowBoxMessage(true)
       return;
     }
 
+
+   
+    
     const foundUsers: User[] = [];
     querySnapshot.forEach(doc => {
       foundUsers.push({ id: doc.id, ...doc.data() } as User);
@@ -71,8 +79,10 @@ const SigninForm: React.FC<SigninProp> = ({ dismissModal }) => {
           router.push('/(screens)/parent-screen');
         })
         .catch(err => {
-          alert('Login failed. Check credentials.');
-          console.error(err);
+          // alert('Login failed. Check credentials.');
+          setMessage('Login failed. Check credentials.');
+          setShowBoxMessage(true)
+          // console.error(err);
         });
     } else {
       // Family Member (Child)
@@ -83,21 +93,39 @@ const SigninForm: React.FC<SigninProp> = ({ dismissModal }) => {
           dismissModal();
           router.push('/(screens)/child-screen');
         } else {
-          alert('No family member with that name found.');
+          //alert('No family member with that name found.');
+          setMessage('No family member with this name found.');
+          setShowBoxMessage(true)
         }
       } else {
-        alert('No family members found for this account.');
+        // alert('No family members found for this account.')
+        setMessage('No family members found for this account.');
+        setShowBoxMessage(true)
       }
     }
   };
 
+ 
+  // useEffect(() => {
+  //   if(message === "") return;
+  //   setShowBoxMessage(true)
+  // }, [message])
+
+
   return (
+    <>
+    <BoxMessage
+        visible={showBoxMessage}
+        dismiss={() => setShowBoxMessage(false)}
+        message={message}
+        />
     <Formik
       initialValues={{ email: '', password: '', name: '' }}
       validationSchema={getValidationSchema(isEnabled)}
       enableReinitialize
       onSubmit={values => signin(values)}
     >
+
       {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isValid }) => (
         <View style={[styles.inputsWrapper, { width: isTablet ? '80%' : '100%' }]}>
           {/* Switch */}
@@ -206,6 +234,7 @@ const SigninForm: React.FC<SigninProp> = ({ dismissModal }) => {
         </View>
       )}
     </Formik>
+    </>
   );
 };
 

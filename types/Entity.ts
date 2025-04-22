@@ -18,9 +18,11 @@ export interface AuthUser {
 }
 
 export interface FamilyMember {
+    memberPushToken: string;
     name: string;
     passcode: string;
     email?: string;
+    parentPushToken?: string;
 }
 
 
