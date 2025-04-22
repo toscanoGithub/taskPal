@@ -65,6 +65,7 @@ const AddFamilyMemberForm: React.FC<AddFamilyMemberFormProps> = ({ dismiss}) => 
           <View style={styles.inputsWrapper}>
             {/* FULL NAME */}
             <Input
+              autoCorrect={false}
               style={styles.input}
               placeholder="Enter name"
               value={values.name}
@@ -76,6 +77,7 @@ const AddFamilyMemberForm: React.FC<AddFamilyMemberFormProps> = ({ dismiss}) => 
 
             {/* PASSCODE */}
             <Input
+              autoCorrect={false}
               style={styles.input}
               placeholder="Enter a Passcode"
               value={values.passcode}

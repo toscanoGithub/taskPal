@@ -16,8 +16,8 @@ const InputWithAutocomplete: React.FC<InputWithAutocompleteProps> = ({getMemberN
   const [suggestions, setSuggestions] = useState<FamilyMember[]>([]);
   const {user} = useUserContext()
   const [membersForUser, setMembersForUser] = useState<FamilyMember[]>([])
-    const isTablet = Device.deviceType === Device.DeviceType.TABLET;
-  
+  const isTablet = Device.deviceType === Device.DeviceType.TABLET;
+
   useEffect(() => {
     if(user?.members) {
       const m = user.members.map(member => member)
@@ -30,13 +30,17 @@ const InputWithAutocomplete: React.FC<InputWithAutocompleteProps> = ({getMemberN
   const handleInputChange = (input: string) => {
     setQuery(input);
     if (input) {
-      const filteredItems = membersForUser.filter(item => item.name.toLowerCase().includes(input.toLowerCase())
-      );
+      let filteredItems = membersForUser.filter(item => item.name.toLowerCase().includes(input.toLowerCase()));
       setSuggestions(filteredItems);
+        
     } else {
+      getMemberNameValue("")
       setSuggestions([]);
     }
   };
+
+  
+  
   
   const handleSuggestionPress = (suggestion: string) => {
     setQuery(suggestion);
@@ -46,10 +50,11 @@ const InputWithAutocomplete: React.FC<InputWithAutocompleteProps> = ({getMemberN
 
   return <>
     <Input
+          autoCorrect={false}
           placeholder={placeholder}
           value={query}
           onChangeText={handleInputChange}
-          textStyle={{ fontSize: isTablet ? 30 : 18, paddingVertical: isTablet ? 8 : 0, color: "black", fontWeight: 300 }}
+          textStyle={{ fontSize: isTablet ? 30 : 16, paddingVertical: isTablet ? 8 : 0, color: "black", fontWeight: 300 }}
           style={[styles.input, {paddingVertical: isTablet ? 15 : 5, width: isTablet ? "80%" : "100%",}]}
         />
         {suggestions.length > 0 && (
