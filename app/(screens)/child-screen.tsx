@@ -1,4 +1,4 @@
-import { Dimensions, Platform, SafeAreaView, StyleSheet, View } from 'react-native';
+import { Alert, Dimensions, Platform, SafeAreaView, StyleSheet, View } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { useUserContext } from '@/contexts/UserContext';
 import { Button, Text } from '@ui-kitten/components';
@@ -9,13 +9,15 @@ import { Task } from '@/types/Entity';
 import TaskView from '../components/_child/TaskView';
 
 // import * as Device from 'expo-device';
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import db from '@/firebase/firebase-config';
 import theme from "../theme.json"
 import { useRouter } from 'expo-router';
-import * as Device from 'expo-device';
 import CalendarLegend from '../components/calendar-legend';
+import BoxMessage from '../components/BoxMessage';
 
 interface TaskItem {
   description: string;
@@ -36,6 +38,153 @@ const ChildScreen = () => {
   const router = useRouter()
   const isTablet = Device.deviceType === Device.DeviceType.TABLET;
   const {height} = Dimensions.get('screen');
+  const [daysCompletedCount, setDaysCompletedCount] = useState(0);
+  const [expoPushToken, setExpoPushToken] = useState('');
+
+const [showBoxMessage, setShowBoxMessage] = useState(false)
+
+
+
+  /****************** NOTIFICATIONS START *********************/
+
+  async function sendPushNotification(expoPushToken: string) {
+    const pt = user?.members?.find(u => u.name === user.name);
+    console.log("::::: pt", pt);
+    
+    const message = {
+      to: expoPushToken,
+      sound: 'default',
+      title: 'All Tasks Completed!',
+      body: `${user?.name} has completed all tasks for today.`,
+      data: { ...pt },
+    };
+  
+    await fetch('https://exp.host/--/api/v2/push/send', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(message),
+    });
+  }
+
+  useEffect(() => {
+    const registerPushToken = async () => {
+      const token = await registerForPushNotificationsAsync();
+      if (!token) return;
+
+      setExpoPushToken(token);
+
+      const docRef = doc(db, 'users', user?.id ?? 'userid');
+
+      try {
+        const userDoc = await getDoc(docRef);
+
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          const members = userData?.members || [];
+
+          const memberIndex = members.findIndex((member: { name: string | undefined }) => member.name === user?.name);
+
+          if (memberIndex !== -1) {
+            const currentMember = members[memberIndex];
+
+            if (currentMember.memberPushToken !== token) {
+              const updatedMember = {
+                ...currentMember,
+                memberPushToken: token,
+              };
+
+              const updatedMembers = [
+                ...members.slice(0, memberIndex),
+                updatedMember,
+                ...members.slice(memberIndex + 1),
+              ];
+
+              await updateDoc(docRef, {
+                members: updatedMembers,
+              });
+
+              setUser(prev => {
+                if (prev) {
+                  return {
+                    ...prev,
+                    members: updatedMembers,
+                  };
+                }
+                return prev;
+              });
+              console.log('Push token updated successfully');
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching or updating user document:', error);
+      }
+    };
+
+    if (user?.id && user?.name) {
+      registerPushToken();
+    }
+
+    // Notification received listener
+    const subscription = Notifications.addNotificationReceivedListener(notification => {
+      const title = notification.request.content.title;
+      const body = notification.request.content.body;
+    });
+
+    // Cleanup the listener when the component unmounts
+    return () => subscription.remove();
+  }, [user?.id, user?.name]);
+
+
+
+  const registerForPushNotificationsAsync = async () => {
+    if (Platform.OS === 'android') {
+      Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+      });
+    }
+
+    if (Device.isDevice) {
+      const { status: existingStatus } = await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== 'granted') {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== 'granted') {
+        alert('Permission not granted to get push token for push notification!');
+        return;
+      }
+      const projectId =
+        Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+      if (!projectId) {
+        alert('Project ID not found');
+      }
+      try {
+        const pushTokenString = (
+          await Notifications.getExpoPushTokenAsync({
+            projectId,
+          })
+        ).data;
+        
+        
+        return pushTokenString;
+      } catch (e: unknown) {
+        alert(`${e}`);
+      }
+    } else {
+      alert('Must use physical device for push notifications');
+    }
+  };
+
+  /****************** NOTIFICATIONS END *********************/
+
 
 
 
@@ -79,12 +228,35 @@ const ChildScreen = () => {
     });
 
     setDaysWithTasks(daysWithTasksObj);
+    setDaysCompletedCount(completedDays);
 
   }, [tasks, user?.name]);
 
   
-
+  useEffect(() => {
+    const totalDaysWithTasks = Object.keys(daysWithTasks).length;
+    console.log("Total days with tasks: ", totalDaysWithTasks);
+    console.log("Days completed count: ", daysCompletedCount);
+    if (  totalDaysWithTasks > 0 && daysCompletedCount === totalDaysWithTasks) {
+      notifyParentWithAllDone();
+    }
+  }, [daysCompletedCount]);
  
+  const getParentPushToken = () => {
+    return user?.parentPushToken;  // Assuming parent's token is stored in user context
+  };
+
+
+  const notifyParentWithAllDone = async () => {
+    if (expoPushToken) {
+      const parentPushToken = getParentPushToken();  // Get parent's push token
+      if (parentPushToken) {        
+        await sendPushNotification(parentPushToken);  // Send notification to parent
+      }
+    }
+
+    setShowBoxMessage(true);
+  };
 
   const handleDayPress = (date: DateData) => {
     const filteredTasks = tasks.filter(task => task.toFamilyMember === user?.name && date.dateString === task.date.dateString);
@@ -105,7 +277,12 @@ const ChildScreen = () => {
 
   return (
     <View style={styles.container}>
-  
+        <BoxMessage
+        visible={showBoxMessage}
+        dismiss={() => setShowBoxMessage(false)}
+        message="Your tasks are done! 
+        The host has been notified."
+        />
       <View style={styles.header}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Text style={[styles.greetings, {fontSize: isTablet ? 30 : 18}]} category="h2">Welcome, </Text>
@@ -150,6 +327,8 @@ const ChildScreen = () => {
         date={selectedDate}
         allDone={() => alert("All tasks are done")}
       />
+
+      
     </View>
   );
 };
@@ -160,6 +339,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F7F8FC",
+    
     
   },
 

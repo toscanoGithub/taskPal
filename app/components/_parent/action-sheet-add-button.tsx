@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Entypo from '@expo/vector-icons/Entypo';
@@ -13,13 +13,12 @@ interface ActionButtonProps {
 
 const ActionSheetAddButton: React.FC<ActionButtonProps> = ({ onPress, iconName, type }) => {
   const isTablet = Device.deviceType === Device.DeviceType.TABLET;
-  
+  const {height, width} = Dimensions.get('window');
+
   return (
-    <TouchableOpacity style={styles.button} onPress={() => onPress()}>
-      <View style={[styles.iconWrapper, {width: isTablet ? 100 : 50, height: isTablet ? 100: 50}]}>
+    <TouchableOpacity style={[styles.button, {width: isTablet ? 100 : 50, height: isTablet ? 100 : 50, bottom: height * 0.01}]} onPress={() => onPress()}>
         {/* <MaterialIcons name={iconName as string | any} size={30} color="white" /> */}
         <AntDesign name="adduser" size={isTablet ? 50 : 25} color={theme["secondary"]} />
-      </View>
     </TouchableOpacity>
   )
 }
@@ -29,8 +28,7 @@ export default ActionSheetAddButton
 const styles = StyleSheet.create({
     button: {
         position: 'absolute',
-        right: 20,
-        bottom: 5,
+        right: 10,
         backgroundColor: theme["gradient-from"], // Tomato color
         
         borderRadius: "50%",

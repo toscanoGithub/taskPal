@@ -15,6 +15,7 @@ import { collection, addDoc, query, where, getDocs, doc } from "firebase/firesto
 import db from '../../../firebase/firebase-config';
 import { router } from 'expo-router';
 import { useUserContext } from '@/contexts/UserContext';
+import  BoxMessage  from '../BoxMessage';
 interface signupProp {
   dismissModal: () => void;  // Defining the function prop type
 }
@@ -40,7 +41,9 @@ const SignupForm: React.FC<signupProp> = ({ dismissModal }) => {
   const {setUser} = useUserContext();
   const [registerBtnPressed, setRegisterBtnPressed] = useState(false)
   const isTablet = Device.deviceType === Device.DeviceType.TABLET;
-  
+  const [showBoxMessage, setShowBoxMessage] = useState(false)
+  const [message, setMessage] = useState("");
+
   // REGISTER LOGIC
  const register = (values: FormValues) => {
       const {name, email, password, confirmPassword} = values;
@@ -53,9 +56,13 @@ const SignupForm: React.FC<signupProp> = ({ dismissModal }) => {
       .catch((error) => {
         console.log(error.message);
         if(error.message.split("-").includes("already")) {
-          alert("Email is already in use")
+          // alert("Email is already in use")
+          setMessage("Email is already in use")
+          setShowBoxMessage(true)
         } else {
-          alert("Something went wrong, try later or contact the developer")
+          // alert("Something went wrong, try later or contact the developer")
+          setMessage("Something went wrong, try later or contact the developer")
+          setShowBoxMessage(true)
         }
       });
     }
@@ -78,8 +85,13 @@ console.error("Error adding document: ", e);
 }
 
   return (
-      
-    <Formik 
+      <>
+      <BoxMessage
+              visible={showBoxMessage}
+              dismiss={() => setShowBoxMessage(false)}
+              message={message}
+              />
+        <Formik 
         initialValues={{
           email: '',
           password: '',
@@ -168,6 +180,8 @@ console.error("Error adding document: ", e);
 }
 
       </Formik>
+      </>
+    
   )
 }
 

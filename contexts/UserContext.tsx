@@ -1,7 +1,8 @@
-import React, { createContext, ReactNode, useContext, useState } from 'react';
+import db from '@/firebase/firebase-config';
 import { FamilyMember } from '@/types/Entity';
 import { arrayUnion, doc, updateDoc } from 'firebase/firestore';
-import db from '@/firebase/firebase-config';
+import React, { createContext, ReactNode, useContext, useState } from 'react';
+import { Alert } from 'react-native';
 
 type AuthUser = {
     id?: string;
@@ -9,14 +10,15 @@ type AuthUser = {
     name: string;
     isFamilyMember: boolean;
     members?: FamilyMember[];
+    parentPushToken?: string;
+    memberPushToken?: string;
 };
 
 type UserContextType = {
     email: string | undefined;
     user: AuthUser | null;
     setUser: React.Dispatch<React.SetStateAction<AuthUser | null>>;
-    updateUser: React.Dispatch<{ name: string; passcode: string}>;
-
+    updateUser: React.Dispatch<{ name: string; passcode: string, parentPushToken: string }>;
 };
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -32,18 +34,21 @@ export const UserContextProvider = ({ children }: UserContextProviderProps) => {
         email: user?.email,
         user,
         setUser,
-        updateUser: async function (value: { name: string; passcode: string}): Promise<void> {
+        updateUser: async function (value: { name: string; passcode: string, parentPushToken: string }): Promise<void> {
             // Query the doc to edit
             const userId = user!.id;
+            console.log("userId ::::::::::::::", userId);
             const docRef = doc(db, 'users', user?.id ?? 'userid');
 
             // Object you want to push to the 'members' array
             const newMember: FamilyMember = {
                 ...value,
                 email: user?.email,
-                
+                memberPushToken: user?.memberPushToken ?? ''
             };
 
+            console.log("newMember ::::::::::::::", newMember, newMember.memberPushToken);
+            
             // Update the document
             await updateDoc(docRef, {
                 members: arrayUnion(newMember)
@@ -58,6 +63,7 @@ export const UserContextProvider = ({ children }: UserContextProviderProps) => {
                         name: '',
                         isFamilyMember: false,
                         members: [newMember],  // Set the new member in the array
+                        parentPushToken: ""
                         
                     };
                 }
@@ -70,7 +76,6 @@ export const UserContextProvider = ({ children }: UserContextProviderProps) => {
             });
             
         }
-        
     };
 
     return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

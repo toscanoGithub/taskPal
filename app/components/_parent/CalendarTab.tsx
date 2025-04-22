@@ -144,29 +144,32 @@ const CalendarTab = () => {
        }
       </View>
 
-      {user?.members && (
+      {user?.members?.length !== 0 && (
         <View style={{ flexDirection: "row", width: "100%", paddingHorizontal: 10, justifyContent: "space-between", alignItems: "center" }}>
           
           <Text style={{fontSize: isTablet ? 50 : 18, color: theme['gradient-to']}} category='h6'>{selectedFamilyMember}</Text>
-          <View style={{ marginLeft: "auto", marginVertical: 10 }}>
+          {
+            user?.members && user.members.length > 0 && (
+              <View style={{ marginLeft: "auto", marginVertical: 10 }}>
             <Popover
               isVisible={isPopoverContentVisible}
               popoverStyle={{ backgroundColor: theme["gradient-to"], backfaceVisibility: "hidden", width: 150 }}
               from={(
+                
                 <TouchableOpacity
-                  disabled={user.members.length === 0}
+                  disabled={user?.members?.length === 0}
                   style={{ borderWidth: 1, borderRadius: 5, borderColor: "#ffffff", padding: 10, marginRight: 10, marginBottom: 3, backgroundColor: theme['gradient-to'] }}
                   onPress={() => {
                     setIsPopoverContentVisible(!isPopoverContentVisible)
                   }}
                 >
                   <Text category="h6" style={{ color: theme.secondary, fontSize: isTablet ? 30 : 12, fontWeight: 900 }}>
-                    {user.members && user.members.length ? "Select a family member" : "No family members yet"}
+                    {user?.members && user.members.length ? "Select a family member" : "No family members yet"}
                   </Text>
                 </TouchableOpacity>
               )}
             >
-              {user.members.map(member => (
+              {user?.members?.map(member => (
                 <Button style={{ width: 150 }} status="info" onPress={() => {
                   fetchTasks()
                   memberSelected(member)
@@ -175,7 +178,8 @@ const CalendarTab = () => {
                 </Button>
               ))}
             </Popover>
-          </View>
+          </View>)
+          }
         </View>
       )}
 
