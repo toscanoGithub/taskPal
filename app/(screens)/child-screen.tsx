@@ -18,6 +18,7 @@ import theme from "../theme.json"
 import { useRouter } from 'expo-router';
 import CalendarLegend from '../components/calendar-legend';
 import BoxMessage from '../components/BoxMessage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface TaskItem {
   description: string;
@@ -249,14 +250,20 @@ const [showBoxMessage, setShowBoxMessage] = useState(false)
 
   const notifyParentWithAllDone = async () => {
     if (expoPushToken) {
-      const parentPushToken = getParentPushToken();  // Get parent's push token
+      const parentPushToken = getParentPushToken();  
       if (parentPushToken) {        
-        await sendPushNotification(parentPushToken);  // Send notification to parent
+        await sendPushNotification(parentPushToken);  
       }
     }
-
+  
     setShowBoxMessage(true);
+    try {
+      await AsyncStorage.setItem(`hasSeenBoxMessage-${user?.id}`, 'true');
+    } catch (e) {
+      console.error("Failed to store box message status:", e);
+    }
   };
+  
 
   const handleDayPress = (date: DateData) => {
     const filteredTasks = tasks.filter(task => task.toFamilyMember === user?.name && date.dateString === task.date.dateString);
@@ -273,16 +280,33 @@ const [showBoxMessage, setShowBoxMessage] = useState(false)
   };
 
 
- 
+  useEffect(() => {
+    const checkBoxMessageStatus = async () => {
+      try {
+        const hasSeen = await AsyncStorage.getItem(`hasSeenBoxMessage-${user?.id}`);
+        if (hasSeen === 'true') {
+          setShowBoxMessage(false);
+        }
+      } catch (e) {
+        console.error("Failed to load box message status:", e);
+      }
+    };
+  
+    if (user?.id) {
+      checkBoxMessageStatus();
+    }
+  }, [user?.id]);
 
   return (
     <View style={styles.container}>
+       <View style={{width:"100%"}}>
         <BoxMessage
-        visible={showBoxMessage}
-        dismiss={() => setShowBoxMessage(false)}
-        message="Your tasks are done! 
-        The host has been notified."
-        />
+          visible={showBoxMessage}
+          dismiss={() => setShowBoxMessage(false)}
+          message="Your tasks are done! 
+          The host has been notified."
+          />
+       </View>
       <View style={styles.header}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Text style={[styles.greetings, {fontSize: isTablet ? 30 : 18}]} category="h2">Welcome, </Text>
@@ -325,7 +349,6 @@ const [showBoxMessage, setShowBoxMessage] = useState(false)
         tasksCurrentdDay={tasksForSelectedDay}
         isVisible={showTask}
         date={selectedDate}
-        allDone={() => alert("All tasks are done")}
       />
 
       

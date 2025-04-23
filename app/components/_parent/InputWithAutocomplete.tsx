@@ -29,15 +29,18 @@ const InputWithAutocomplete: React.FC<InputWithAutocompleteProps> = ({getMemberN
 
   const handleInputChange = (input: string) => {
     setQuery(input);
+    getMemberNameValue(input); // <-- always call this
+    
     if (input) {
-      let filteredItems = membersForUser.filter(item => item.name.toLowerCase().includes(input.toLowerCase()));
+      const filteredItems = membersForUser.filter(item =>
+        item.name.toLowerCase().includes(input.toLowerCase())
+      );
       setSuggestions(filteredItems);
-        
     } else {
-      getMemberNameValue("")
       setSuggestions([]);
     }
   };
+  
 
   
   
@@ -57,7 +60,7 @@ const InputWithAutocomplete: React.FC<InputWithAutocompleteProps> = ({getMemberN
           textStyle={{ fontSize: isTablet ? 30 : 16, paddingVertical: isTablet ? 8 : 0, color: "black", fontWeight: 300 }}
           style={[styles.input, {paddingVertical: isTablet ? 15 : 5, width: isTablet ? "80%" : "100%",}]}
         />
-        {suggestions.length > 0 && (
+        {/* {suggestions.length > 0 && (
           <FlatList
             data={suggestions}
             keyExtractor={(item) => item.name}
@@ -68,7 +71,7 @@ const InputWithAutocomplete: React.FC<InputWithAutocompleteProps> = ({getMemberN
             )}
             style={[styles.suggestionsList, {width: isTablet ? "80%" : "100%", height: isTablet ? 400 : 200, }]}
           />
-        )}
+        )} */}
   
   </>
 };

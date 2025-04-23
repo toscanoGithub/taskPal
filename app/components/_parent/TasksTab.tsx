@@ -1,5 +1,5 @@
 import { FlatList, StyleSheet, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Text, Layout } from '@ui-kitten/components'
 import theme from '../../theme.json'
 import InputWithAutocomplete from './InputWithAutocomplete'
@@ -17,25 +17,18 @@ const TasksTab = () => {
   const { tasks } = useTaskContext() as { tasks: Task[] }
   const isTablet = Device.deviceType === Device.DeviceType.TABLET;
 
-  let filteredTasks = (term !== "")
-    ? tasks.filter(task =>
-        task.toFamilyMember.toLowerCase().includes(term.toLowerCase())
-      )
-    : tasks
+  const filteredTasks = useMemo(() => {
+    return tasks.filter(task =>
+      task.parent.email === user?.email &&
+      (term ? task.toFamilyMember.toLowerCase().includes(term.toLowerCase()) : true)
+    )
+  }, [term, tasks, user])
 
-
-    if(term === "") {
-        filteredTasks = tasks
-    }
-    
-    
-    
   return (
     <View style={styles.container}>
       <InputWithAutocomplete
         getMemberNameValue={(memberName: string) => {
           setTerm(memberName)
-
         }}
         placeholder="Search a family member name"
       />
@@ -49,30 +42,30 @@ const TasksTab = () => {
               <Gradient from={theme['gradient-from']} to={theme['gradient-to']} />
               <Text category='h6' style={{ color: theme.secondary, fontSize: isTablet ? 30 : 18 }}>{item.toFamilyMember}</Text>
               <Text category='s2' style={{ color: theme.tertiary, fontWeight: '300', fontSize: isTablet ? 30 : 15 }}>{item.date.dateString}</Text>
-              {
-                item.tasks?.map((task, index) => {
-                  const taskObj = typeof task === 'string' ? { description: task } : task;
-                  return (
-                    <Layout key={index} style={styles.taskDescription}>
-                      <MaterialCommunityIcons name="hexagon-outline" size={isTablet ? 20 : 10} color={theme.tertiary} />
-                      <Text style={{ color: "#ffffff70", fontSize: isTablet ? 40 : 18 }}>{taskObj.description}</Text>
-                    </Layout>
-                  );
-                })
-              }
+              {item.tasks?.map((task, index) => {
+                const taskObj = typeof task === 'string' ? { description: task } : task;
+                return (
+                  <Layout key={index} style={styles.taskDescription}>
+                    <MaterialCommunityIcons name="hexagon-outline" size={isTablet ? 20 : 10} color={theme.tertiary} />
+                    <Text style={{ color: "#ffffff70", fontSize: isTablet ? 40 : 18 }}>{taskObj.description}</Text>
+                  </Layout>
+                );
+              })}
             </Layout>
           )}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{paddingBottom: 120, }}
+          contentContainerStyle={{ paddingBottom: 120 }}
         />
       ) : (
-        <Layout style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Layout style={{ flex: 1, justifyContent: "center", alignItems: "center", width: "100%",
+        }}>
           <Text category='h6'>No tasks found</Text>
         </Layout>
       )}
     </View>
   )
 }
+
 export default TasksTab
 
 const styles = StyleSheet.create({
@@ -82,14 +75,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-
   tasksCard: {
     padding: 10, 
     marginVertical: 5,
-    
-
   },
-
   taskDescription: {
     paddingHorizontal: 10,
     flexDirection: "row",
@@ -101,6 +90,4 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginTop: 10,
   }
-
-
 })

@@ -138,7 +138,7 @@ const CalendarTab = () => {
           <Text style={[styles.greetings, {fontSize: isTablet ? 30 : 18}]} category="h1">{user?.name}</Text>
         </View>
        {
-        !selectedFamilyMember &&  <Text style={[styles.instructions, {fontSize: isTablet ? 30 : 18}]} category="s2">
+        user?.members && !selectedFamilyMember &&  <Text style={[styles.instructions, {fontSize: isTablet ? 30 : 18}]} category="s2">
         Please, select a family member .
       </Text>  
        }
