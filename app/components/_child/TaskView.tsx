@@ -21,7 +21,6 @@ interface TaskViewProps {
   isVisible: boolean;
   tasksCurrentdDay: { description: string, id: string, status: string }[];
   date?: DateData;
-  allDone: () => void;
   dismiss: () => void;
 }
 
@@ -30,7 +29,7 @@ type ButtonCenter = {
   y: number;
 };
 
-const TaskView: React.FC<TaskViewProps> = ({ isVisible, tasksCurrentdDay, date, allDone, dismiss }) => {
+const TaskView: React.FC<TaskViewProps> = ({ isVisible, tasksCurrentdDay, date, dismiss }) => {
   const [confettiStates, setConfettiStates] = useState<{ [key: string]: boolean }>({});
   const [buttonCenter, setButtonCenter] = useState<ButtonCenter | null>(null);
   const { user } = useUserContext();
@@ -109,7 +108,7 @@ const TaskView: React.FC<TaskViewProps> = ({ isVisible, tasksCurrentdDay, date, 
     <SafeAreaView style={styles.container}>
       {/* Sliding view */}
       <Animated.View style={[styles.slidingView, animatedStyle]}>
-      <TouchableOpacity onPress={() => slideOut()} style={{ marginTop: 0.15 * screenHeight, marginLeft: 0, zIndex: 1000, width: 70, height: 70, justifyContent: "center", alignItems: "center" }}>
+      <TouchableOpacity onPress={() => slideOut()} style={{ marginTop: isTablet ? 150 : 100, marginLeft: 0, zIndex: 1000, width: 70, height: 70, justifyContent: "center", alignItems: "center" }}>
           <Ionicons name="arrow-back-circle-outline" size={isTablet ? 70 : 50} color={theme['btn-bg-color']} />
         </TouchableOpacity>
         <Text category="h1" style={{ color: theme['gradient-to'], marginTop: 30, fontSize: isTablet ? 44 : 22, paddingLeft: 10, textAlign: "center" }}>
@@ -213,3 +212,13 @@ const styles = StyleSheet.create({
 
 export default TaskView;
 
+
+
+/* 
+    Reset storage:
+    const resetBoxMessage = async () => {
+      await AsyncStorage.removeItem(`hasSeenBoxMessage-${user?.id}`);
+      setShowBoxMessage(false);
+    };
+
+*/

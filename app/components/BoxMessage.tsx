@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { StyleSheet, Modal, View, Animated, Easing, Dimensions } from 'react-native';
 import { Button, Card, Text } from '@ui-kitten/components';
 import theme from "../theme.json"
+import * as Device from 'expo-device';
 
 interface BoxMessageProps {
   visible: boolean;
@@ -12,6 +13,7 @@ interface BoxMessageProps {
 const BoxMessage: React.FC<BoxMessageProps> = ({ visible, dismiss, message }) => {
     const slideAnim = useRef(new Animated.Value(-300)).current; // Start above the screen
     const {height} = Dimensions.get('window');
+    const isTablet = Device.deviceType === Device.DeviceType.TABLET;
 
     useEffect(() => {
         if (visible) {
@@ -35,11 +37,11 @@ const BoxMessage: React.FC<BoxMessageProps> = ({ visible, dismiss, message }) =>
     >
         <Animated.View style={{ transform: [{ translateY: slideAnim }] }}>
         <Card style={styles.card} disabled={true}>
-          <Text style={styles.message}>
+          <Text style={[styles.message, {fontSize: isTablet ? 34 : 18}]}>
             {message}
           </Text>
           <Button appearance='outline'  onPress={dismiss} style={styles.button}>
-            {evaProps => <Text style={{color: theme.secondary}}>Okay</Text>}
+            {evaProps => <Text style={{fontSize: isTablet ? 30 : 18, fontWeight: 700, color: theme.secondary, marginHorizontal:"auto"}}>Okay</Text>}
           </Button>
         </Card>
       </Animated.View>
@@ -58,7 +60,10 @@ const styles = StyleSheet.create({
   },
 
   card: {
-    width: '90%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    
+    minHeight: 200,
     marginHorizontal:"auto",
     backgroundColor: theme['gradient-to'],
     borderRadius: 10,
@@ -72,16 +77,20 @@ const styles = StyleSheet.create({
     }  
   },
   message: {
-    marginBottom: 10,
     textAlign: 'center',
     color: "white",
+    marginBottom: 20,
+    
   },
   button: {
-    alignSelf: 'center',
+    width:"40%",
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: "auto",
     marginTop: 10,
     backgroundColor: "transparent",
     borderColor: theme.secondary,
-    padding: 10,
-    width: '100%',
+    
+   
   },
 });
