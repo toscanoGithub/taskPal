@@ -6,7 +6,7 @@ export interface User {
     name: string;
     email: string;
     isFamilyMember: boolean;
-    members?: FamilyMember[]
+    members?: FamilyMember[];
 }
 
 export interface AuthUser {
@@ -14,7 +14,7 @@ export interface AuthUser {
     name: string;
     email: string;
     isFamilyMember: boolean;
-    members?: FamilyMember[]
+    members?: FamilyMember[];
 }
 
 export interface FamilyMember {
@@ -23,6 +23,8 @@ export interface FamilyMember {
     passcode: string;
     email?: string;
     parentPushToken?: string;
+    points?: number;
+    isFamilyMember: boolean;
 }
 
 
@@ -32,27 +34,23 @@ export interface Parent {
     id: string;
     name: string;
     email: string;
-    members?: FamilyMember[]
-}
-
-
-interface TaskItem {
+  }
+  
+  export interface TaskItem {
     id: string;
     description: string;
-    status: string;
-}
-
-
-// Define the Task type
-export interface Task {
-    // [x: string]: TaskItem[];
+    status: 'In Progress' | 'Pending Approval' | 'Approved';
+    rewardValue: number;
+  }
+  
+  export interface Task {
     id?: string;
+    description: string;
     date: DateData;
     parent: Parent;
+    rewardValue?: number;
     toFamilyMember: string;
-    description: string,
-    tasks: TaskItem[];
-    
-}
+    tasks: TaskItem[]; // <-- make sure this is NOT optional
+  }
 
 

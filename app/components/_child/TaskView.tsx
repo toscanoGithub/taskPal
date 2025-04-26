@@ -8,14 +8,13 @@ import { useUserContext } from '@/contexts/UserContext';
 import { useTaskContext } from '@/contexts/TaskContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-import { collection, doc, getDocs, query, where } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import db from '@/firebase/firebase-config';
 import { DateData } from 'react-native-calendars';
-import { Task } from '@/types/Entity';
+import { Task } from '../../../types/Entity';
 import * as Device from 'expo-device';
 
-
-const { height, width } = Dimensions.get('screen');
+const { height } = Dimensions.get('screen');
 
 interface TaskViewProps {
   isVisible: boolean;
@@ -31,9 +30,8 @@ type ButtonCenter = {
 
 const TaskView: React.FC<TaskViewProps> = ({ isVisible, tasksCurrentdDay, date, dismiss }) => {
   const [confettiStates, setConfettiStates] = useState<{ [key: string]: boolean }>({});
-  const [buttonCenter, setButtonCenter] = useState<ButtonCenter | null>(null);
+  const [localTaskStatuses, setLocalTaskStatuses] = useState<{ [key: string]: string }>({});
   const { user } = useUserContext();
-  const { tasks } = useTaskContext();
   const { updateTask } = useTaskContext();
 
   const slidePosition = useSharedValue(-height);
@@ -61,85 +59,141 @@ const TaskView: React.FC<TaskViewProps> = ({ isVisible, tasksCurrentdDay, date, 
   }));
 
   const handlePressDoneBtn = async (taskId: string) => {
-    setConfettiStates(prev => ({ ...prev, [taskId]: true }));
-
-    const q = query(collection(db, "tasks"), where("date", "==", date), where("toFamilyMember", "==", user!.name));
-    const querySnapshot = await getDocs(q);
-    if (querySnapshot.empty) {
-      console.log("no Task registered yet");
-    } else {
-      querySnapshot.forEach(async (currentDoc) => {
-        updateTask(currentDoc.data() as Task, taskId);
-      });
+    setLocalTaskStatuses(prev => ({ ...prev, [taskId]: 'Pending Approval' }));
+  
+    try {
+      const q = query(
+        collection(db, "tasks"),
+        where("date", "==", date),
+        where("toFamilyMember", "==", user!.name)
+      );
+      const querySnapshot = await getDocs(q);
+  
+      if (querySnapshot.empty) {
+        console.log("No task found.");
+      } else {
+        querySnapshot.forEach(async (currentDoc) => {
+          const taskData = currentDoc.data() as Task;
+  
+          // Update the task status
+          await updateTask(taskData, taskId);
+  
+          const familyMemberName = taskData.toFamilyMember;
+  
+          // Step 1: Get all completed tasks for this family member
+          const completedTasksSnap = await getDocs(
+            query(
+              collection(db, "tasks"),
+              where("toFamilyMember", "==", familyMemberName),
+              where("status", "==", "Approved")
+            )
+          );
+  
+          let totalReward = 0;
+          completedTasksSnap.forEach(doc => {
+            const task = doc.data();
+            if (typeof task.rewardValue === 'number') {
+              totalReward += task.rewardValue;
+            }
+          });
+  
+          // Step 2: Get all users and find the one with this family member
+          const usersSnapshot = await getDocs(collection(db, "users"));
+  
+          for (const userDoc of usersSnapshot.docs) {
+            const userData = userDoc.data();
+  
+            if (!Array.isArray(userData.members)) continue;
+  
+            const updatedMembers = userData.members.map((member: any) => {
+              if (member.name === familyMemberName) {
+                return {
+                  ...member,
+                  points: totalReward,
+                };
+              }
+              return member;
+            });
+  
+            const wasUpdated = JSON.stringify(updatedMembers) !== JSON.stringify(userData.members);
+  
+            // Step 3: If we updated any member, save back to Firestore
+            if (wasUpdated) {
+              await updateDoc(doc(db, "users", userDoc.id), {
+                members: updatedMembers
+              });
+            }
+          }
+        });
+      }
+    } catch (error) {
+      console.error("Error updating task or points:", error);
     }
   };
+  
+  
 
-  // Ensure confetti triggers for all tasks when they are all completed
-  useEffect(() => {
-    if(!isVisible) return;    
-    const allTasksCompleted = tasksCurrentdDay.every(t => t.status === "Completed");
-    if (allTasksCompleted) {
-      const updatedConfettiStates = tasksCurrentdDay.reduce<{ [key: string]: boolean }>((acc, task) => {
-        acc[task.id] = true;  // Trigger confetti for all tasks
-        return acc;
-      }, {});
-      setConfettiStates(updatedConfettiStates);
-    }
-  }, [tasksCurrentdDay, isVisible]);  // Re-run whenever tasks change
-
-  const handleLayout = (event: any) => {
-    const { x, y, width, height } = event.nativeEvent.layout;
-    setButtonCenter({ x: x + width / 2, y: y + height / 2 });
-  };
-
-  const screenHeight = Dimensions.get("screen").height;
-
-
-  // Format the date to a readable format
-  // Example: "April 23, 2025"
   const formattedDate = new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   }).format(date ? new Date(date.year, date.month - 1, date.day) : new Date());
 
-
   return (
     <SafeAreaView style={styles.container}>
-      {/* Sliding view */}
       <Animated.View style={[styles.slidingView, animatedStyle]}>
-      <TouchableOpacity onPress={() => slideOut()} style={{ marginTop: isTablet ? 150 : 100, marginLeft: 0, zIndex: 1000, width: 70, height: 70, justifyContent: "center", alignItems: "center" }}>
+        <TouchableOpacity onPress={slideOut} style={{ marginTop: isTablet ? 150 : 120, zIndex: 1000, width: 70, height: 70, justifyContent: "center", alignItems: "center" }}>
           <Ionicons name="arrow-back-circle-outline" size={isTablet ? 70 : 50} color={theme['btn-bg-color']} />
         </TouchableOpacity>
+
         <Text category="h1" style={{ color: theme['gradient-to'], marginTop: 30, fontSize: isTablet ? 44 : 22, paddingLeft: 10, textAlign: "center" }}>
-        Scheduled tasks for
+          Scheduled tasks for
         </Text>
         <Text style={{ color: theme['gradient-to'], fontSize: isTablet ? 30 : 16, marginBottom: 20, textAlign: "center" }}>
           {formattedDate}
         </Text>
+
         <View style={styles.content}>
-          {tasksCurrentdDay.map(task => (
-            <View style={[styles.taskCard, {minHeight: isTablet ? 120 : 70}]} key={task.id}>
-              <Text style={[styles.description, {fontSize: isTablet ? 34 : 18}]}>{task.description}</Text>
+          {tasksCurrentdDay.map(task => {
+            const effectiveStatus = localTaskStatuses[task.id] || task.status;
 
-              {/* Show "Done" button if task is not completed */}
-              {task.status !== "Completed" && !confettiStates[task.id] && (
-                <TouchableOpacity onLayout={handleLayout} onPress={() => handlePressDoneBtn(task.id)} style={[styles.doneBtn]}>
-                  <Text style={{ textAlign: "center" }}>Done</Text>
-                </TouchableOpacity>
-              )}
+            return (
+              <View style={[styles.taskCard, { minHeight: isTablet ? 120 : 70 }]} key={task.id}>
+                <Text style={[styles.description, { fontSize: isTablet ? 34 : 18 }]}>{task.description}</Text>
 
-              {/* Display the confetti animation for the task if it's completed */}
-              {(task.status === "Completed" || confettiStates[task.id]) && (
-                <LottieView
-                  source={require('../../../assets/animations/done.json')} // Path to your confetti animation JSON
-                  autoPlay
-                  loop={false}
-                  style={[styles.confetti, { zIndex: 1000, width: isTablet ? 150 : 100, height: isTablet ? 150 : 100, right: -isTablet ? -75 : -50, bottom: -isTablet ? -75 : -50 }]}
-                />
-              )}
-            </View>
-          ))}
+                {effectiveStatus === "Approved" ? (
+                  <LottieView
+                    source={require('../../../assets/animations/done.json')}
+                    autoPlay
+                    loop={false}
+                    style={[
+                      styles.confetti,
+                      {
+                        zIndex: 1000,
+                        width: isTablet ? 150 : 100,
+                        height: isTablet ? 150 : 100,
+                        right: isTablet ? -75 : -50,
+                        bottom: isTablet ? -75 : -50
+                      }
+                    ]}
+                  />
+                ) : (
+                  <TouchableOpacity
+                    onPress={() => handlePressDoneBtn(task.id)}
+                    disabled={effectiveStatus === "Pending Approval"}
+                    style={[
+                      styles.doneBtn,
+                      { backgroundColor: theme.secondary }
+                    ]}
+                  >
+                    <Text style={{ textAlign: "center" }}>
+                      {effectiveStatus === "Pending Approval" ? "Pending Approval" : "Done"}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            );
+          })}
         </View>
       </Animated.View>
     </SafeAreaView>
@@ -152,7 +206,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  
   slidingView: {
     position: 'absolute',
     bottom: 0,
@@ -182,13 +235,12 @@ const styles = StyleSheet.create({
     borderTopStartRadius: 20,
     borderBottomRightRadius: 5,
     borderBottomLeftRadius: 5,
-    boxShadow: "rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     justifyContent: "center",
     alignItems: "flex-start"
   },
-    description: {
+  description: {
     fontSize: 16,
-    fontWeight: 700,
+    fontWeight: "700",
     paddingHorizontal: 10,
     color: theme.secondary,
   },
@@ -197,11 +249,10 @@ const styles = StyleSheet.create({
     zIndex: 100,
     marginLeft: "auto",
     borderRadius: 30,
-    backgroundColor: theme.secondary,
     padding: 5,
     bottom: -10,
     right: -10,
-    width: 80,
+    width: 100,
   },
   confetti: {
     position: 'absolute',
@@ -211,14 +262,3 @@ const styles = StyleSheet.create({
 });
 
 export default TaskView;
-
-
-
-/* 
-    Reset storage:
-    const resetBoxMessage = async () => {
-      await AsyncStorage.removeItem(`hasSeenBoxMessage-${user?.id}`);
-      setShowBoxMessage(false);
-    };
-
-*/

@@ -12,13 +12,14 @@ type AuthUser = {
     members?: FamilyMember[];
     parentPushToken?: string;
     memberPushToken?: string;
+    points?: number;
 };
 
 type UserContextType = {
     email: string | undefined;
     user: AuthUser | null;
     setUser: React.Dispatch<React.SetStateAction<AuthUser | null>>;
-    updateUser: React.Dispatch<{ name: string; passcode: string, parentPushToken: string }>;
+    updateUser: React.Dispatch<{ name: string; passcode: string, parentPushToken: string, points: number }>;
 };
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -34,7 +35,7 @@ export const UserContextProvider = ({ children }: UserContextProviderProps) => {
         email: user?.email,
         user,
         setUser,
-        updateUser: async function (value: { name: string; passcode: string, parentPushToken: string }): Promise<void> {
+        updateUser: async function (value: { name: string; passcode: string, parentPushToken: string, points: number }): Promise<void> {
             // Query the doc to edit
             const userId = user!.id;
             console.log("userId ::::::::::::::", userId);
@@ -44,7 +45,9 @@ export const UserContextProvider = ({ children }: UserContextProviderProps) => {
             const newMember: FamilyMember = {
                 ...value,
                 email: user?.email,
-                memberPushToken: user?.memberPushToken ?? ''
+                memberPushToken: user?.memberPushToken ?? '',
+                isFamilyMember: true,
+                parentPushToken: user?.parentPushToken ?? ''
             };
 
             console.log("newMember ::::::::::::::", newMember, newMember.memberPushToken);

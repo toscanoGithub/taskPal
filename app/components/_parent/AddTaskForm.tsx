@@ -21,6 +21,7 @@ interface AddTaskFormProps {
 
   const validationSchema = Yup.object().shape({
     description: Yup.string().required("Task description is required"),
+    rewardValue: Yup.number().required("Task reward value is required"),
   });
 
 const AddTaskForm: React.FC<AddTaskFormProps> = ({date, dismiss, toFamilyMember}) => {
@@ -48,6 +49,7 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({date, dismiss, toFamilyMember}
         <Formik 
             initialValues={{
               description: "",
+              rewardValue: 0,
             }}
             validationSchema={validationSchema}
             
@@ -85,9 +87,22 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({date, dismiss, toFamilyMember}
                     </TouchableOpacity>
                     </View>
                      {touched.description && errors.description && <Text style={styles.errorText}>{errors.description}</Text>}
+
+                     <Input
+                        autoCorrect={false}
+                        textStyle={{ fontSize: isTablet ? 30 : 18, color: "white" }}
+                        style={styles.input}
+                        placeholder='Task reward'
+                        value={ values.rewardValue.toString()}
+                        onChangeText={handleChange('rewardValue')}
+                        onBlur={handleBlur('rewardValue')}
+                        status={touched.rewardValue && errors.rewardValue ? 'danger' : 'basic'}
+                      />
             </View>
-            
             }
+            
+            
+            
             
           </Formik>
 

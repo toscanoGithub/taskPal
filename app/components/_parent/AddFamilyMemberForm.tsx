@@ -53,11 +53,11 @@ const AddFamilyMemberForm: React.FC<AddFamilyMemberFormProps> = ({ dismiss}) => 
 
           // Ensure email is a valid string (defaults to empty string if undefined)
           const email = user?.email || '';
-
+          const points = user?.points || 0;
           
 
           // Call updateUser to add the new member
-          updateUser({name, passcode, parentPushToken});
+          updateUser({name, passcode, parentPushToken, points});
           dismiss();
         }}
       >
