@@ -87,9 +87,9 @@ const SigninForm: React.FC<SigninProp> = ({ dismissModal }) => {
     } else {
       // Family Member (Child)
       if (foundUser.members) {
-        const member = foundUser.members.find(m => m.name === name);
+        const member = foundUser.members.find(m => m.name.toLowerCase().trim() === name?.toLowerCase().trim());
         if (member) {
-          setUser(prev => (prev ? { ...prev, name: member.name } : prev));
+          setUser(prev => (prev ? { ...prev, name: member.name, points: member.points, isFamilyMember: true } : prev));
           dismissModal();
           router.push('/(screens)/child-screen');
         } else {
@@ -120,7 +120,7 @@ const SigninForm: React.FC<SigninProp> = ({ dismissModal }) => {
         message={message}
         />
     <Formik
-      initialValues={{ email: '', password: '', name: '' }}
+      initialValues={{ email: 'kader@task.pal', password: 'Qwerty', name: 'Laila' }}
       validationSchema={getValidationSchema(isEnabled)}
       enableReinitialize
       onSubmit={values => signin(values)}

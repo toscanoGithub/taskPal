@@ -53,6 +53,8 @@ export default function RootLayout() {
           <Stack.Screen name="(screens)/index" />
           <Stack.Screen name="(screens)/parent-screen" options={{headerShown: true, header: () => <Header />}}/>
           <Stack.Screen name="(screens)/child-screen" options={{headerShown: true, header: () => <Header />}}/>
+          <Stack.Screen name="(screens)/store-screen" options={{headerShown: true, header: () => <Header />}}/>
+
           <Stack.Screen name="+not-found" />
         </Stack>
           <StatusBar style="auto" />
