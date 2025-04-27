@@ -25,8 +25,11 @@ const TasksTab = () => {
   const [tasks, setTasks] = useState<Task[]>([])
   const [originalTasksOnLoad, setOriginalTasksOnLoad] = useState<Task[]>([])
   const [changedMembers, setChangedMembers] = useState<Set<string>>(new Set())
+  const [modified, setModified] = useState(false)
 
   useEffect(() => {
+    if(!modified) return;
+
     const changedMembers = new Set<string>()
   
     tasks.forEach(taskGroup => {
@@ -47,8 +50,8 @@ const TasksTab = () => {
 
     })
     setChangedMembers(new Set(changedMembers))
-    // console.log('Changed family members:', Array.from(changedMembers))
-  }, [tasks, originalTasksOnLoad])
+    console.log('Changed family members:', Array.from(changedMembers))
+  }, [tasks])
   
 
 
@@ -87,6 +90,8 @@ const TasksTab = () => {
             points: calculatePoints(updatedGroupTasks)
           }
         }
+
+        setModified(true)
         return taskGroup
       })
 
@@ -116,25 +121,27 @@ const TasksTab = () => {
   return (
     <View style={styles.container}>
       {/* Notifications button */}
-      <TouchableOpacity
-  onPress={() => {
-    changedMembers.forEach(member => {
-      console.log(`Notify ${member}`)
-      // You can trigger notifications here
-    })
-  }}
-  disabled={changedMembers.size === 0}
-  style={{
-    position: 'absolute',
-    right: 10,
-    bottom:10,
-    zIndex: 100,
-    
-    
-  }}
->
-  {changedMembers.size !== 0 && <View style={{flexDirection:"row", justifyContent: "center", alignItems:"center", backgroundColor: theme['gradient-from'], padding: 3, borderRadius: 10}}><Text style={{color: theme.tertiary, }}>Notify family members</Text><Ionicons name="notifications-outline" size={30} color={theme.secondary} /></View> }
-</TouchableOpacity>
+      {
+        changedMembers.size !== 0 && (<TouchableOpacity
+          onPress={() => {
+            changedMembers.forEach(member => {
+              console.log(`Notify ${member}`)
+              // You can trigger notifications here
+            })
+          }}
+          disabled={changedMembers.size === 0}
+          style={{
+            position: 'absolute',
+            right: 10,
+            bottom:10,
+            zIndex: 100,
+            
+            
+          }}
+        >
+          {changedMembers.size !== 0 && <View style={{flexDirection:"row", justifyContent: "center", alignItems:"center", backgroundColor: theme['gradient-from'], padding: 3, borderRadius: 10}}><Text style={{color: theme.tertiary, }}>Notify family members</Text><Ionicons name="notifications-outline" size={30} color={theme.secondary} /></View> }
+        </TouchableOpacity>)
+      }
 
       <InputWithAutocomplete
         getMemberNameValue={(memberName: string) => setTerm(memberName)}

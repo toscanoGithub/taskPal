@@ -186,6 +186,7 @@ export const TaskContextProvider = ({ children }: { children: ReactNode }) => {
 
       querySnapshot.forEach(async (currentDoc) => {
         const email = currentDoc.data().parent.email;
+        
         const docRef = doc(db, 'tasks', currentDoc.id);
         const docData = currentDoc.data();
         const tasksArray = docData.tasks || [];
@@ -212,7 +213,10 @@ export const TaskContextProvider = ({ children }: { children: ReactNode }) => {
 
         fetchTasks();
 
-        updateFamilyMemberPoints(familyMember, rewardValueDelta, email);
+        // ✅ Only update points if there's an actual change
+        if (rewardValueDelta !== 0) {
+          updateFamilyMemberPoints(familyMember, rewardValueDelta, email);
+        }
       });
     } catch (error) {
       console.error('Error toggling task status:', error);
@@ -227,37 +231,54 @@ export const TaskContextProvider = ({ children }: { children: ReactNode }) => {
     try {
       const q = query(collection(db, 'users'), where('email', '==', email));
       const querySnapshot = await getDocs(q);
-
+  
       if (querySnapshot.empty) {
         console.log('No user with that family member found');
         return;
       }
-
+  
       querySnapshot.forEach(async (currentDoc) => {
         const docRef = doc(db, 'users', currentDoc.id);
         const userData = currentDoc.data();
         const members = userData.members || [];
-
+  
+        // Find the current member to log their original points
+        const currentMember = members.find((member: any) => member.name === familyMember);
+  
+        if (!currentMember) {
+          console.warn(`Family member ${familyMember} not found`);
+          return;
+        }
+  
+        const currentPoints = +currentMember.points || 0;
+        const newPoints = currentPoints + pointsDelta;
+  
+        console.log(
+          `Current points for ${familyMember}: ${currentPoints}, delta: ${pointsDelta}, new total: ${newPoints}`
+        );
+  
         const updatedMembers = members.map((member: any) => {
           if (member.name === familyMember) {
             return {
               ...member,
-              points: (member.points || 0) + pointsDelta,
+              points: newPoints,
             };
           }
           return member;
         });
-
+  
         await updateDoc(docRef, {
           members: updatedMembers,
         });
-
+  
+        
         console.log(`Updated points for ${familyMember} by ${pointsDelta}`);
       });
     } catch (error) {
       console.error('Error updating family member points:', error);
     }
   };
+  
 
   const getTaskById = (id: string) => {
     return tasks.find((task) => task.id === id);
