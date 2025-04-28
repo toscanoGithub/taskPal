@@ -1,5 +1,5 @@
 import { Alert, Dimensions, Platform, SafeAreaView, StyleSheet, View } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useUserContext } from '@/contexts/UserContext';
 import { Button, Text } from '@ui-kitten/components';
 import { Calendar } from 'react-native-calendars';
@@ -7,8 +7,6 @@ import { DateData, Direction, MarkedDates } from 'react-native-calendars/src/typ
 import { useTaskContext } from '@/contexts/TaskContext';
 import { Task } from '@/types/Entity';
 import TaskView from '../components/_child/TaskView';
-
-// import * as Device from 'expo-device';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
@@ -36,22 +34,20 @@ const ChildScreen = () => {
   const [modalType, setModalType] = useState<string>();
   const [tasksForSelectedDay, settasksForSelectedDay] = useState<TaskItem[]>([]);
   const [showTask, setShowTask] = useState(false);
-  const router = useRouter()
+  const router = useRouter();
   const isTablet = Device.deviceType === Device.DeviceType.TABLET;
-  const {height} = Dimensions.get('screen');
+  const { height } = Dimensions.get('screen');
   const [daysCompletedCount, setDaysCompletedCount] = useState(0);
   const [expoPushToken, setExpoPushToken] = useState('');
 
-const [showBoxMessage, setShowBoxMessage] = useState(false)
-
-
+  const [showBoxMessage, setShowBoxMessage] = useState(false);
 
   /****************** NOTIFICATIONS START *********************/
 
   async function sendPushNotification(expoPushToken: string) {
     const pt = user?.members?.find(u => u.name === user.name);
     console.log("::::: pt", pt);
-    
+
     const message = {
       to: expoPushToken,
       sound: 'default',
@@ -59,7 +55,7 @@ const [showBoxMessage, setShowBoxMessage] = useState(false)
       body: `${user?.name} has completed all tasks for today.`,
       data: { ...pt },
     };
-  
+
     await fetch('https://exp.host/--/api/v2/push/send', {
       method: 'POST',
       headers: {
@@ -139,8 +135,6 @@ const [showBoxMessage, setShowBoxMessage] = useState(false)
     return () => subscription.remove();
   }, [user?.id, user?.name]);
 
-
-
   const registerForPushNotificationsAsync = async () => {
     if (Platform.OS === 'android') {
       Notifications.setNotificationChannelAsync('default', {
@@ -173,8 +167,8 @@ const [showBoxMessage, setShowBoxMessage] = useState(false)
             projectId,
           })
         ).data;
-        
-        
+
+
         return pushTokenString;
       } catch (e: unknown) {
         alert(`${e}`);
@@ -186,10 +180,6 @@ const [showBoxMessage, setShowBoxMessage] = useState(false)
 
   /****************** NOTIFICATIONS END *********************/
 
-
-
-
-
   useEffect(() => {
     const filteredTasks = tasks.filter(task => task.toFamilyMember === user?.name);
 
@@ -199,15 +189,16 @@ const [showBoxMessage, setShowBoxMessage] = useState(false)
     filteredTasks.forEach(task => {
       const taskItems = task.tasks as unknown as TaskItem[];
 
-      const allCompleted = taskItems.every((item: TaskItem) => item.status === "Completed");
+      // Check if all tasks for this day are "Pending Approval"
+      const allPendingApproval = taskItems.every((item: TaskItem) => item.status === "Pending Approval");
 
+      // Set the calendar's marked dates object
       daysWithTasksObj[task.date.dateString] = {
-        
         customStyles: {
           container: {
             borderRadius: 999, // makes it a full circle
-            width: isTablet ? 50 : 30,         // increase width
-            height: isTablet ? 50 : 30,        // increase height
+            width: isTablet ? 50 : 30,  // adjust size
+            height: isTablet ? 50 : 30, // adjust size
             alignItems: 'center',
             justifyContent: 'center',
           },
@@ -218,56 +209,55 @@ const [showBoxMessage, setShowBoxMessage] = useState(false)
         },
         selected: true,
         marked: true,
-        dotColor: !allCompleted ? theme['gradient-to'] : "transparent",
-        // selectedTextColor: "#14282F",
-        selectedColor: allCompleted ? theme['gradient-to'] : theme.secondary,
+        dotColor: !allPendingApproval ? theme['gradient-to'] : "transparent",
+        selectedColor: allPendingApproval ? theme['gradient-to'] : theme.secondary,
       };
 
-      if (allCompleted) {
+      // If all tasks for this day are "Pending Approval," increase the completedDays count
+      if (allPendingApproval) {
         completedDays += 1;
+        // Call function to send notification for the specific day when all tasks are pending approval
+        notifyParentWithSingleDayDone(task.date.dateString);
       }
     });
 
+    // Update the state with the marked dates
     setDaysWithTasks(daysWithTasksObj);
-    setDaysCompletedCount(completedDays);
-
   }, [tasks, user?.name]);
 
-  
-  useEffect(() => {
-    const totalDaysWithTasks = Object.keys(daysWithTasks).length;
-    console.log("Total days with tasks: ", totalDaysWithTasks);
-    console.log("Days completed count: ", daysCompletedCount);
-    if (  totalDaysWithTasks > 0 && daysCompletedCount === totalDaysWithTasks) {
-      notifyParentWithAllDone();
-    }
-  }, [daysCompletedCount]);
- 
   const getParentPushToken = () => {
     return user?.parentPushToken;  // Assuming parent's token is stored in user context
   };
 
+  // Function to send notification for a single day when all tasks are Pending Approval
+  const notifyParentWithSingleDayDone = async (dateString: string) => {
+    const parentPushToken = getParentPushToken();
+    if (parentPushToken && expoPushToken) {
+      const message = {
+        to: parentPushToken,
+        sound: 'default',
+        title: 'Pending Tasks for Approval!',
+        body: `All tasks for ${user?.name} on ${dateString} are Pending Approval.`,
+        data: { dateString, tasks: tasksForSelectedDay },
+      };
 
-  const notifyParentWithAllDone = async () => {
-    if (expoPushToken) {
-      const parentPushToken = getParentPushToken();  
-      if (parentPushToken) {        
-        await sendPushNotification(parentPushToken);  
-      }
-    }
-  
-    setShowBoxMessage(true);
-    try {
-      await AsyncStorage.setItem(`hasSeenBoxMessage-${user?.id}`, 'true');
-    } catch (e) {
-      console.error("Failed to store box message status:", e);
+      // Sending the notification
+      await fetch('https://exp.host/--/api/v2/push/send', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(message),
+      });
+
+      setShowBoxMessage(true)
     }
   };
-  
 
   const handleDayPress = (date: DateData) => {
     const filteredTasks = tasks.filter(task => task.toFamilyMember === user?.name && date.dateString === task.date.dateString);
-    if(filteredTasks.length === 0) return;
+    if (filteredTasks.length === 0) return;
 
     const taskItems = filteredTasks.map(task => task.tasks)[0] as unknown as TaskItem[];
 
@@ -278,7 +268,6 @@ const [showBoxMessage, setShowBoxMessage] = useState(false)
     setSelectedDate(date);
     setShowTask(true);
   };
-
 
   useEffect(() => {
     const checkBoxMessageStatus = async () => {
@@ -291,7 +280,7 @@ const [showBoxMessage, setShowBoxMessage] = useState(false)
         console.error("Failed to load box message status:", e);
       }
     };
-  
+
     if (user?.id) {
       checkBoxMessageStatus();
     }
@@ -299,24 +288,22 @@ const [showBoxMessage, setShowBoxMessage] = useState(false)
 
   return (
     <View style={styles.container}>
-       <View style={{width:"100%"}}>
+      <View style={{ width: "100%" }}>
         <BoxMessage
           visible={showBoxMessage}
           dismiss={() => setShowBoxMessage(false)}
-          message="Your tasks are done! 
-          The host has been notified."
-          />
-       </View>
+          message="Your tasks are done! The host has been notified."
+        />
+      </View>
       <View style={styles.header}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Text style={[styles.greetings, {fontSize: isTablet ? 30 : 18}]} category="h2">Welcome, </Text>
-          <Text style={[styles.greetings, {fontSize: isTablet ? 30 : 18}]} category="h1">{user?.name}</Text>
+          <Text style={[styles.greetings, { fontSize: isTablet ? 30 : 18 }]} category="h2">Welcome, </Text>
+          <Text style={[styles.greetings, { fontSize: isTablet ? 30 : 18 }]} category="h1">{user?.name}</Text>
         </View>
-        
-        <Text style={[styles.instructions, {fontSize: isTablet ? 30 : 18}]} category="s2">
-        Interact with the calendar below to see your tasks.
-      </Text>  
-        
+
+        <Text style={[styles.instructions, { fontSize: isTablet ? 30 : 18 }]} category="s2">
+          Interact with the calendar below to see your tasks.
+        </Text>
       </View>
 
       <View style={styles.calendarContainer}>
@@ -324,12 +311,20 @@ const [showBoxMessage, setShowBoxMessage] = useState(false)
           markingType={'custom'}
           enableSwipeMonths={true}
           hideExtraDays={true}
-          style={{  height: isTablet && height * 0.5  }}
-          theme={{weekVerticalMargin: isTablet ? 40 : 5,  calendarBackground: "#ffffff", dayTextColor:"black", textDayFontWeight: 400, textDayFontSize: isTablet ? 25 : 16, textMonthFontSize: isTablet ? 30 : 18, textMonthFontWeight: 700 }}
+          style={{ height: isTablet && height * 0.5 }}
+          theme={{
+            weekVerticalMargin: isTablet ? 40 : 5,
+            calendarBackground: "#ffffff",
+            dayTextColor: "black",
+            textDayFontWeight: 400,
+            textDayFontSize: isTablet ? 25 : 16,
+            textMonthFontSize: isTablet ? 30 : 18,
+            textMonthFontWeight: 700
+          }}
           minDate={new Date().toISOString().split('T')[0]}
           maxDate={'2080-12-31'}
           date={new Date().toLocaleDateString()}
-          
+
           onDayPress={handleDayPress}
           monthFormat={'yyyy MMM'}
           renderArrow={(direction: Direction) => (
@@ -339,19 +334,16 @@ const [showBoxMessage, setShowBoxMessage] = useState(false)
           )}
           markedDates={daysWithTasks}
         />
-
       </View>
 
       <CalendarLegend />
-      
+
       <TaskView
         dismiss={() => setShowTask(false)}
         tasksCurrentdDay={tasksForSelectedDay}
         isVisible={showTask}
         date={selectedDate}
       />
-
-      
     </View>
   );
 };
@@ -362,10 +354,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F7F8FC",
-    
-    
   },
-
   animationContainer: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -373,16 +362,15 @@ const styles = StyleSheet.create({
     top: "30%",
   },
   revealRewardBtn: {
-    position:"absolute",
+    position: "absolute",
     alignSelf: "center",
-    
+
     backgroundColor: theme['gradient-from'],
     borderRadius: 70,
     paddingHorizontal: 50,
     paddingVertical: 30,
     borderTopWidth: 0,
     borderBottomColor: theme.secondary
-    
   },
 
   revealRewardTextBtn: {
@@ -390,7 +378,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     textTransform: "capitalize",
     fontWeight: "300",
-
   },
   header: {
     paddingVertical: 20,

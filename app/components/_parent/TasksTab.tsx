@@ -19,7 +19,7 @@ const calculatePoints = (tasks: Task['tasks']) =>
 const TasksTab = () => {
   const [term, setTerm] = useState<string>('')
   const { user } = useUserContext()
-  const { tasks: contextTasks, toggleTaskStatusInFirestore } = useTaskContext()
+  const { tasks: contextTasks, updateTaskStatusInFirestore } = useTaskContext()
   const isTablet = Device.deviceType === Device.DeviceType.TABLET
 
   const [tasks, setTasks] = useState<Task[]>([])
@@ -67,7 +67,7 @@ const TasksTab = () => {
     )
   }, [term, tasks, user])
 
-  const toggleTaskStatus = (familyMember: string, taskId: string) => {
+  const updateTaskStatus = (familyMember: string, taskId: string) => {
       setTasks(prevTasks => {
         const updatedTasks = prevTasks.map(taskGroup => {
           if (taskGroup.toFamilyMember === familyMember) {
@@ -82,7 +82,7 @@ const TasksTab = () => {
             })
 
           // Firestore update
-          toggleTaskStatusInFirestore(familyMember, taskGroup.date, taskId)
+          updateTaskStatusInFirestore(familyMember, taskGroup.date, taskId)
 
           return {
             ...taskGroup,
@@ -184,7 +184,8 @@ const TasksTab = () => {
                 return (
                   <View key={`${item.toFamilyMember}-${task.id}`}>
                     <TouchableOpacity
-                      onPress={() => toggleTaskStatus(item.toFamilyMember, task.id)}
+                      disabled={isApproved}
+                      onPress={() => updateTaskStatus(item.toFamilyMember, task.id)}
                       activeOpacity={0.8}
                     >
                       <Layout style={styles.taskDescription}>
@@ -196,9 +197,11 @@ const TasksTab = () => {
 
                         <View style={styles.checkboxContainer}>
                           <Checkbox
-                            style={styles.checkbox}
+                          
+                            style={[styles.checkbox, { opacity: isApproved ? 0.3 : 1, backgroundColor: isApproved ? theme['gradient-to'] : theme['gradient-from']}]}
                             value={isApproved}
                             color={isApproved ? theme['gradient-to'] : theme['gradient-from']}
+                            
                           />
                         </View>
 
@@ -274,7 +277,11 @@ const styles = StyleSheet.create({
   },
   checkbox: {
     transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }],
-    borderRadius: 5,
+    borderRadius: 3,
+    borderWidth: 1,
+    justifyContent:"center",
+    alignItems:"center",
+    marginLeft: 5,
   },
   taskText: {
     color: '#ffffff70',
