@@ -30,7 +30,7 @@ interface TaskContextType {
   updateTask: (task: Task, taskId: string) => void;
   getTaskById: (id: string) => Task | undefined;
   fetchTasks: () => void;
-  toggleTaskStatusInFirestore: (
+  updateTaskStatusInFirestore: (
     familyMember: string,
     date: DateData,
     taskId: string
@@ -165,7 +165,7 @@ export const TaskContextProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const toggleTaskStatusInFirestore = async (
+  const updateTaskStatusInFirestore = async (
     familyMember: string,
     date: DateData,
     taskId: string
@@ -292,7 +292,7 @@ export const TaskContextProvider = ({ children }: { children: ReactNode }) => {
         updateTask,
         getTaskById,
         fetchTasks,
-        toggleTaskStatusInFirestore,
+        updateTaskStatusInFirestore,
       }}
     >
       {children}
