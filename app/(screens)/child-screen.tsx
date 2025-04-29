@@ -190,7 +190,7 @@ const ChildScreen = () => {
       const taskItems = task.tasks as unknown as TaskItem[];
 
       // Check if all tasks for this day are "Pending Approval"
-      const allPendingApproval = taskItems.every((item: TaskItem) => item.status === "Pending Approval");
+      const allPendingApproval = taskItems.every((item: TaskItem) => (item.status === "Pending Approval" || item.status === "In Progress"));
 
       // Set the calendar's marked dates object
       daysWithTasksObj[task.date.dateString] = {
@@ -210,7 +210,7 @@ const ChildScreen = () => {
         selected: true,
         marked: true,
         dotColor: !allPendingApproval ? theme['gradient-to'] : "transparent",
-        selectedColor: allPendingApproval ? theme['gradient-to'] : theme.secondary,
+        selectedColor: allPendingApproval ? theme.secondary : theme['gradient-to'],
       };
 
       // If all tasks for this day are "Pending Approval," increase the completedDays count

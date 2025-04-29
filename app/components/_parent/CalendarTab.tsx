@@ -85,7 +85,7 @@ const CalendarTab = () => {
       
       if (taskItems) {
         // Type assertion to specify taskItems as an array of objects with a `status` property
-        const allCompleted = (taskItems as unknown as { status: string }[]).every((item) => item.status === 'Completed');
+        const allCompleted = (taskItems as unknown as { status: string }[]).every((item) => item.status === 'Approved');
         newDaysWithTasks[td.dateString] = {
           customStyles: {
             container: {
