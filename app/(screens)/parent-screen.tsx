@@ -126,7 +126,7 @@ const ParentScreen = () => {
         {selectedIndex === 0 ? (
           <CalendarTab  />
         ) : (
-          <TasksTab />
+          <TasksTab parentPushToken={expoPushToken}/>
         )}
       </View>
 
