@@ -12,11 +12,14 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import * as Device from 'expo-device'
 import { Task } from '@/types/Entity'
 import Ionicons from '@expo/vector-icons/Ionicons';
+import BoxMessage from '../BoxMessage'
 
 const calculatePoints = (tasks: Task['tasks']) =>
   tasks.reduce((total, task) => total + (task.status === 'Approved' ? +task.rewardValue || 0 : 0), 0)
-
-const TasksTab = () => {
+interface Props {
+  parentPushToken: string
+}
+const TasksTab:React.FC<Props> = ({parentPushToken}) => {
   const [term, setTerm] = useState<string>('')
   const { user } = useUserContext()
   const { tasks: contextTasks, updateTaskStatusInFirestore } = useTaskContext()
@@ -26,8 +29,11 @@ const TasksTab = () => {
   const [originalTasksOnLoad, setOriginalTasksOnLoad] = useState<Task[]>([])
   const [changedMembers, setChangedMembers] = useState<Set<string>>(new Set())
   const [modified, setModified] = useState(false)
+  const [expoPushToken, setExpoPushToken] = useState('');
+  const [showBoxMessage, setShowBoxMessage] = useState(false);
 
   useEffect(() => {
+    setExpoPushToken(parentPushToken)
     if(!modified) return;
 
     const changedMembers = new Set<string>()
@@ -118,8 +124,55 @@ const TasksTab = () => {
     })
   }
 
+
+
+  const getMemberPushToken = (memberName: string) => {
+
+    const memberToken = user?.members?.find(member => member.name === memberName)?.memberPushToken;
+    return memberToken  // Assuming member token is stored in user context
+  };
+
+  // Function to send notification for a single day when all tasks are Pending Approval
+  const notifyAFamilyMemberWithApprovalTasks = async (memberName: string) => {
+    
+    
+    const memberPushToken = getMemberPushToken(memberName);
+    console.log("::::::::::::::", memberPushToken);
+    
+    if (memberPushToken && expoPushToken) {
+      const message = {
+        to: memberPushToken,
+        sound: 'default',
+        title: 'Tasks Approval!',
+        body: `Your tasks are approved. Good job`,
+        // data: { dateString, tasks: tasksForSelectedDay },
+      };
+
+      // Sending the notification
+      await fetch('https://exp.host/--/api/v2/push/send', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(message),
+      });
+
+      console.log("success...");
+      
+      setShowBoxMessage(true)
+    }
+  };
+
   return (
     <View style={styles.container}>
+      <View style={{ width: "100%" }}>
+        <BoxMessage
+          visible={showBoxMessage}
+          dismiss={() => setShowBoxMessage(false)}
+          message="Your tasks are approved. Congrats!"
+        />
+      </View>
       {/* Notifications button */}
       {
         changedMembers.size !== 0 && (<TouchableOpacity
@@ -127,9 +180,10 @@ const TasksTab = () => {
             changedMembers.forEach(member => {
               console.log(`Notify ${member}`)
               // You can trigger notifications here
+              notifyAFamilyMemberWithApprovalTasks(member)
             })
           }}
-          disabled={changedMembers.size === 0}
+          // disabled={changedMembers.size === 0}
           style={{
             position: 'absolute',
             right: 10,
