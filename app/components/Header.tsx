@@ -37,7 +37,7 @@ const Header = () => {
   }
 
   useEffect(() => {
-    console.log("Header user ::::::::::::::", user?.points?.toString(), user?.isFamilyMember);
+    console.log("Header user ::::::::::::::", user?.points?.toString());
   }, [user])
   
   
@@ -46,7 +46,7 @@ const Header = () => {
       <View style={styles.row}>
           
           {
-            user?.isFamilyMember === true ? (<TouchableOpacity style={styles.piggyWrapper} onPress={() => router.push({pathname: "/(screens)/store-screen", params: {userId: user?.id, points: user?.points}})}>
+            user?.isFamilyMember === true ? (<TouchableOpacity style={styles.piggyWrapper} onPress={() => router.push("/(screens)/store-screen")}>
 
             <Image source={require('../../assets/images/wallet.png')} style={styles.image} />
             <Text style={{color: theme["secondary"], alignSelf:"flex-end", fontSize: isTablet ? 20 : 14, fontWeight: 700,}} category='s1'>{user?.points?.toString()}</Text>

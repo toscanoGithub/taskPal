@@ -1,6 +1,6 @@
 import db from '@/firebase/firebase-config';
 import { FamilyMember } from '@/types/Entity';
-import { arrayUnion, doc, updateDoc } from 'firebase/firestore';
+import { arrayUnion, doc, getDoc, updateDoc } from 'firebase/firestore';
 import React, { createContext, ReactNode, useContext, useState } from 'react';
 import { Alert } from 'react-native';
 
@@ -20,6 +20,9 @@ type UserContextType = {
     user: AuthUser | null;
     setUser: React.Dispatch<React.SetStateAction<AuthUser | null>>;
     updateUser: React.Dispatch<{ name: string; passcode: string, parentPushToken: string, points: number }>;
+    updatePointsforAFamilyMember: React.Dispatch<{ name: string; passcode: string, parentPushToken: string, points: number }>;
+
+    
 };
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -50,7 +53,7 @@ export const UserContextProvider = ({ children }: UserContextProviderProps) => {
                 parentPushToken: user?.parentPushToken ?? ''
             };
 
-            console.log("newMember ::::::::::::::", newMember, newMember.memberPushToken);
+            console.log("newMember ::::::::::::::", newMember, newMember.points);
             
             // Update the document
             await updateDoc(docRef, {
@@ -78,7 +81,66 @@ export const UserContextProvider = ({ children }: UserContextProviderProps) => {
                 };
             });
             
+        },
+
+        updatePointsforAFamilyMember: async function (value: { name: string; passcode: string, parentPushToken: string, points: number }): Promise<void> {
+            const userId = user!.id;
+            if (!userId) {
+                console.error("User ID is undefined.");
+                return;
+            }
+            const docRef = doc(db, 'users', userId);
+        
+            // Fetch the current document
+            const docSnap = await getDoc(docRef);
+            if (!docSnap.exists()) {
+                console.error("User document does not exist.");
+                return;
+            }
+        
+            const data = docSnap.data();
+            const members: FamilyMember[] = data.members || [];
+        
+            // Find and update the specific member by some identifier (e.g., name or email)
+            const updatedMembers = members.map(member => {
+                if (member.name === value.name) {
+                    return {
+                        ...member,
+                        points: value.points
+                    };
+                }
+                return member;
+            });
+        
+            // Overwrite the members array with the updated one
+            await updateDoc(docRef, {
+                members: updatedMembers
+            });
+        
+            setUser(prevUser => {
+                if (!prevUser) return null;
+              
+                // Update just the points for the current user (e.g., if the current user is a family member)
+                if (prevUser.isFamilyMember) {
+                  return {
+                    ...prevUser,
+                    points: value.points
+                  };
+                }
+              
+                // Or update a member inside the members array
+                const updatedMembers = (prevUser.members ?? []).map(member =>
+                  member.name === value.name ? { ...member, points: value.points } : member
+                );
+              
+                return {
+                  ...prevUser,
+                  members: updatedMembers
+                };
+              });
+              
         }
+        
     };
 
     return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
