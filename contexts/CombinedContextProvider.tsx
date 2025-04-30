@@ -2,12 +2,16 @@
 import React from 'react';
 import { TaskContextProvider } from "./TaskContext";  
 import { UserContextProvider } from './UserContext';
+import { RewardProvider } from './StoreContext';
 
 const CombinedContextProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <UserContextProvider>
           <TaskContextProvider>
-          {children}
+            <RewardProvider>
+              {children}
+            </RewardProvider>
+          
       </TaskContextProvider>
     </UserContextProvider>
   );

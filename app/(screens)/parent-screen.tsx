@@ -11,6 +11,7 @@ import { useUserContext } from '@/contexts/UserContext'
 import { doc, updateDoc } from 'firebase/firestore';
 import db from '@/firebase/firebase-config';
 import { useTaskContext } from '@/contexts/TaskContext'
+import StoreScreen from './store-screen'
 
 
 Notifications.setNotificationHandler({
@@ -114,20 +115,38 @@ const ParentScreen = () => {
       alert('Must use physical device for push notifications');
     }
   };
+
+  const tabsLayout = () => {
+    switch (selectedIndex) {
+      case 0:
+        return <CalendarTab />;
+      case 1:
+        return <TasksTab parentPushToken={expoPushToken}/>
+      case 2:
+        return <StoreScreen />
+    
+      default:
+        break;
+    }
+  }
   
   return (
     <View style={styles.container}>
       <TabBar style={{backgroundColor: "#ffffff"}} indicatorStyle={{backgroundColor: theme['gradient-to'], height: 4, marginBottom: 10,}} selectedIndex={selectedIndex} onSelect={index => setSelectedIndex(index)}>
         <Tab title={evaProps => <Text category='s1'   {...evaProps} style={{color: selectedIndex === 0 ? theme['gradient-from'] : "gray", fontSize: isTablet ? 40 : 18, paddingVertical: 10}}>Calendar</Text>} />
         <Tab title={evaProps => <Text category='s1'   {...evaProps} style={{color: selectedIndex === 1 ? theme['gradient-from'] : "gray", fontSize: isTablet ? 40 : 18, paddingVertical: 10}}>Tasks</Text>} />
+        <Tab title={evaProps => <Text category='s1'   {...evaProps} style={{color: selectedIndex === 1 ? theme['gradient-from'] : "gray", fontSize: isTablet ? 40 : 18, paddingVertical: 10}}>Store</Text>} />
+
       </TabBar>
 
       <View style={styles.tabContent}>
-        {selectedIndex === 0 ? (
+
+          {tabsLayout()}
+        {/* {selectedIndex === 0 ? (
           <CalendarTab  />
         ) : (
           <TasksTab parentPushToken={expoPushToken}/>
-        )}
+        )} */}
       </View>
 
     </View>
