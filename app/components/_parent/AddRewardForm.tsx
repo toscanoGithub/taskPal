@@ -1,96 +1,90 @@
-import { StyleSheet, View } from 'react-native';
+import { Dimensions, Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { Button, Input, Text } from '@ui-kitten/components';
 import { useTaskContext } from '@/contexts/TaskContext';
-import { FamilyMember, Task } from '@/types/Entity';
+import { FamilyMember, Reward, Task } from '@/types/Entity';
 import { useUserContext } from '@/contexts/UserContext';
+import Gradient from '../Gradient';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import theme from "../../theme.json"
 import * as Device from 'expo-device';
+import { useRewardContext } from '@/contexts/StoreContext';
 
-interface AddFamilyMemberFormProps {
+interface AddRewardFormProps {
   dismiss: () => void;
   
 }
 
-interface FormValues {
-  name: string;
-  passcode: string;
-}
+
 
 const validationSchema = Yup.object().shape({
-  name: Yup.string().required("Name is required"),
-  passcode: Yup.string().required("Passcode is required"),
+  title: Yup.string().required("Reward title is required"),
+  cost: Yup.string().required("Reward value is required"),
+  
 });
 
-const AddFamilyMemberForm: React.FC<AddFamilyMemberFormProps> = ({ dismiss}) => {
-  const { tasks, addTaskToContext } = useTaskContext();
-  const { updateUser, user } = useUserContext();
-  const [currentDayTask, setCurrentDayTask] = useState<Task>();
+const AddRewardForm: React.FC<AddRewardFormProps> = ({ dismiss}) => {
+  const { createReward } = useRewardContext();
+  const {user} = useUserContext()
   const isTablet = Device.deviceType === Device.DeviceType.TABLET;
 
-  useEffect(() => {
-    // Any side effects to manage
-  }, []);
 
   return (
     <View>
       {/* MODAL TITLE */}
       <Text category="h4" style={styles.modalTitle}>
-        Add Family Member
+        Add Reward
       </Text>
 
       {/* Form */}
       <Formik
         initialValues={{
-          name: "",
-          passcode: ""
+          title: "",
+          cost: "",
         }}
         validationSchema={validationSchema}
         onSubmit={values => {
-          const { name, passcode } = values;
-
-          // Ensure that parentPushToken is a valid string (defaults to empty string if undefined)
-          const parentPushToken = user?.parentPushToken || ''; // If pushToken is undefined, use ''
-
-          // Ensure email is a valid string (defaults to empty string if undefined)
-          const email = user?.email || '';
-          const points = user?.points || 0;
+          const { title, cost } = values;
+          const newReward = {title, cost: parseInt(cost), redeemed: false, familyEmail: user?.email} as Reward
+          createReward({...newReward})
+          // ADD REWARD
           
-
-          // Call updateUser to add the new member
-          updateUser({name, passcode, parentPushToken, points});
           dismiss();
         }}
       >
         {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
           <View style={styles.inputsWrapper}>
-            {/* FULL NAME */}
+            {/* REWARD TITLE */}
             <Input
               textStyle={{ fontSize: isTablet ? 30 : 20, color: 'white' }}
               autoCorrect={false}
               style={styles.input}
-              placeholder="Enter name"
-              value={values.name}
-              onChangeText={handleChange('name')}
-              onBlur={handleBlur('name')}
-              status={touched.name && errors.name ? 'danger' : 'basic'}
+              placeholder="Reward title"
+              value={values.title}
+              onChangeText={handleChange('title')}
+              onBlur={handleBlur('title')}
+              status={touched.title && errors.title ? 'danger' : 'basic'}
             />
-            {touched.name && errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
+            {touched.title && errors.title && <Text style={styles.errorText}>{errors.title}</Text>}
 
-            {/* PASSCODE */}
+            {/* REWARD VALUE */}
             <Input
               textStyle={{ fontSize: isTablet ? 30 : 20, color: 'white' }}
               autoCorrect={false}
               style={styles.input}
-              placeholder="Enter a Passcode"
-              value={values.passcode}
-              onChangeText={handleChange('passcode')}
-              onBlur={handleBlur('passcode')}
-              status={touched.passcode && errors.passcode ? 'danger' : 'basic'}
+              placeholder="Reward value"
+              value={values.cost}
+              onChangeText={handleChange('cost')}
+              onBlur={handleBlur('cost')}
+              status={touched.cost && errors.cost ? 'danger' : 'basic'}
+              keyboardType="numeric"
             />
-            {touched.passcode && errors.passcode && <Text style={styles.errorText}>{errors.passcode}</Text>}
+            {touched.cost && errors.cost && <Text style={styles.errorText}>{errors.cost}</Text>}
 
+
+            
             {/* Submit Button */}
             <Button
               appearance="outline"
@@ -101,17 +95,19 @@ const AddFamilyMemberForm: React.FC<AddFamilyMemberFormProps> = ({ dismiss}) => 
               status="primary"
             >
               {evaProps => <Text style={{ ...evaProps, color: "#EDB232", fontSize: 20 }}>
-                Add new family member
+                Add new reward
               </Text>}
             </Button>
           </View>
         )}
       </Formik>
+
+      
     </View>
   );
 };
 
-export default AddFamilyMemberForm;
+export default AddRewardForm;
 
 const styles = StyleSheet.create({
   modalTitle: {
@@ -151,4 +147,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#DDCA8750"
   },
+
+  
 });
