@@ -45,7 +45,6 @@ export const RewardProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const q = query(collection(db, 'rewards'), where('familyEmail', '==', familyEmail));
     const snapshot = await getDocs(q);
     const fetched = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as RewardWithId));
-    console.log("::::::::::::::", fetched);
     
     setRewards(fetched);
   };

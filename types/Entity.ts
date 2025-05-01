@@ -57,12 +57,10 @@ export interface Parent {
   export interface Reward {
     id?: string;
     title: string;
-    description: string;
     cost: number;
     redeemed: boolean;
-    availableTo: string[];     // family member names
-    familyEmail: string;       // unique identifier per family
-    redeemedBy: string;      // soft-deletion or visibility
+    familyEmail: string;
+    toFamilyMembers: string[]
   };
 
 

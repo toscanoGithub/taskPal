@@ -6,10 +6,10 @@ import * as Yup from 'yup';
 import { Button, Input, Text } from '@ui-kitten/components';
 import theme from "../../theme.json"
 import { useTaskContext } from '@/contexts/TaskContext';
-import { Task } from '@/contexts/TaskContext';
 import { useUserContext } from '@/contexts/UserContext';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 import * as Device from 'expo-device';
+import { Task } from '@/types/Entity';
 
 
 interface AddTaskFormProps {
@@ -28,7 +28,6 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({date, dismiss, toFamilyMember}
     const {tasks, addTaskToContext} = useTaskContext()
     const [currentDayTask, setCurrentDayTask] = useState<Task>()
     const {user} = useUserContext();
-    const [tempTasks, setTempTasks] = useState<Task[]>([])
     const isTablet = Device.deviceType === Device.DeviceType.TABLET;
 
     useEffect(() => {

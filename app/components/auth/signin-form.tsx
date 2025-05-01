@@ -197,7 +197,7 @@ const SigninForm: React.FC<SigninProp> = ({ dismissModal }) => {
                 autoCorrect={false}
                 textStyle={{ fontSize: isTablet ? 30 : 20, color: 'white' }}
                 style={styles.input}
-                placeholder="Your name"
+                placeholder="Your name or passcode"
                 value={values.name}
                 onChangeText={handleChange('name')}
                 onBlur={handleBlur('name')}
